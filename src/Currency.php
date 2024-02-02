@@ -1,19 +1,17 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway;
 
-enum Currency: string
+class Currency
 {
-
-	case CZK = 'CZK';
-	case EUR = 'EUR';
-	case USD = 'USD';
-	case GBP = 'GBP';
-	case HRK = 'HRK';
-	case HUF = 'HUF';
-	case PLN = 'PLN';
-	case RON = 'RON';
-	case NOK = 'NOK';
-	case SEK = 'SEK';
-
+    public const CZK = 'CZK';
+    public const EUR = 'EUR';
+    public const USD = 'USD';
+    public const GBP = 'GBP';
+    public const HRK = 'HRK';
+    public const HUF = 'HUF';
+    public const PLN = 'PLN';
+    public const RON = 'RON';
+    public const NOK = 'NOK';
+    public const SEK = 'SEK';
 }

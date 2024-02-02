@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Api;
 
@@ -8,14 +8,20 @@ use function sprintf;
 class InvalidPaymentException extends RequestException
 {
 
-	public function __construct(private ProcessPaymentRequest $request, Response $response, string $payId)
-	{
-		parent::__construct(sprintf('PayId %s is invalid or expired.', $payId), $response);
-	}
+    /**
+     * @var \SlevomatCsobGateway\Call\ProcessPaymentRequest
+     */
+    private $request;
 
-	public function getRequest(): ProcessPaymentRequest
-	{
-		return $this->request;
-	}
+    public function __construct(ProcessPaymentRequest $request, Response $response, string $payId)
+    {
+        $this->request = $request;
+        parent::__construct(sprintf('PayId %s is invalid or expired.', $payId), $response);
+    }
+
+    public function getRequest(): ProcessPaymentRequest
+    {
+        return $this->request;
+    }
 
 }

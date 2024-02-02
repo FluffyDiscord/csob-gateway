@@ -1,8 +1,7 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
-use SlevomatCsobGateway\Api\ApiClient;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 use SlevomatCsobGateway\EncodeHelper;
 use SlevomatCsobGateway\Validator;
@@ -11,39 +10,51 @@ use function array_filter;
 class RefundPaymentRequest
 {
 
-	public function __construct(
-		private string $merchantId,
-		private string $payId,
-		private ?int $amount = null,
-	)
-	{
-		Validator::checkPayId($payId);
-	}
+    /**
+     * @var string
+     */
+    private $merchantId;
+    /**
+     * @var string
+     */
+    private $payId;
+    /**
+     * @var int|null
+     */
+    private $amount;
 
-	public function send(ApiClient $apiClient): AuthCodeStatusDetailPaymentResponse
-	{
-		$requestData = array_filter([
-			'merchantId' => $this->merchantId,
-			'payId' => $this->payId,
-			'amount' => $this->amount,
-		], EncodeHelper::filterValueCallback());
+    public function __construct(string $merchantId, string $payId, ?int $amount = null)
+    {
+        $this->merchantId = $merchantId;
+        $this->payId = $payId;
+        $this->amount = $amount;
+        Validator::checkPayId($payId);
+    }
 
-		$response = $apiClient->put(
-			'payment/refund',
-			$requestData,
-			new SignatureDataFormatter([
-				'merchantId' => null,
-				'payId' => null,
-				'dttm' => null,
-				'amount' => null,
-			]),
-			new SignatureDataFormatter(AuthCodeStatusDetailPaymentResponse::encodeForSignature()),
-		);
+    /**
+     * @param \SlevomatCsobGateway\Api\ApiClient $apiClient
+     */
+    public function send($apiClient): AuthCodeStatusDetailPaymentResponse
+    {
+        $requestData = array_filter([
+            'merchantId' => $this->merchantId,
+            'payId'      => $this->payId,
+            'amount'     => $this->amount,
+        ], EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
+            return !empty($value);
+        } : EncodeHelper::filterValueCallback(), EncodeHelper::filterValueCallback() === null ? ARRAY_FILTER_USE_BOTH : 0);
 
-		/** @var mixed[] $data */
-		$data = $response->getData();
+        $response = $apiClient->put('payment/refund', $requestData, new SignatureDataFormatter([
+            'merchantId' => null,
+            'payId'      => null,
+            'dttm'       => null,
+            'amount'     => null,
+        ]), new SignatureDataFormatter(AuthCodeStatusDetailPaymentResponse::encodeForSignature()));
 
-		return AuthCodeStatusDetailPaymentResponse::createFromResponseData($data);
-	}
+        /** @var mixed[] $data */
+        $data = $response->getData();
+
+        return AuthCodeStatusDetailPaymentResponse::createFromResponseData($data);
+    }
 
 }

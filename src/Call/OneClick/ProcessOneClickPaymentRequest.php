@@ -1,9 +1,8 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call\OneClick;
 
 use SlevomatCsobGateway\AdditionalData\Fingerprint;
-use SlevomatCsobGateway\Api\ApiClient;
 use SlevomatCsobGateway\Call\ActionsPaymentResponse;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 use SlevomatCsobGateway\EncodeHelper;
@@ -13,39 +12,51 @@ use function array_filter;
 class ProcessOneClickPaymentRequest
 {
 
-	public function __construct(
-		private string $merchantId,
-		private string $payId,
-		private ?Fingerprint $fingerprint = null,
-	)
-	{
-		Validator::checkPayId($payId);
-	}
+    /**
+     * @var string
+     */
+    private $merchantId;
+    /**
+     * @var string
+     */
+    private $payId;
+    /**
+     * @var \SlevomatCsobGateway\AdditionalData\Fingerprint|null
+     */
+    private $fingerprint;
 
-	public function send(ApiClient $apiClient): ActionsPaymentResponse
-	{
-		$requestData = array_filter([
-			'merchantId' => $this->merchantId,
-			'payId' => $this->payId,
-			'fingerprint' => $this->fingerprint?->encode(),
-		], EncodeHelper::filterValueCallback());
+    public function __construct(string $merchantId, string $payId, ?Fingerprint $fingerprint = null)
+    {
+        $this->merchantId = $merchantId;
+        $this->payId = $payId;
+        $this->fingerprint = $fingerprint;
+        Validator::checkPayId($payId);
+    }
 
-		$response = $apiClient->post(
-			'oneclick/process',
-			$requestData,
-			new SignatureDataFormatter([
-				'merchantId' => null,
-				'payId' => null,
-				'dttm' => null,
-				'fingerprint' => Fingerprint::encodeForSignature(),
-			]),
-			new SignatureDataFormatter(ActionsPaymentResponse::encodeForSignature()),
-		);
+    /**
+     * @param \SlevomatCsobGateway\Api\ApiClient $apiClient
+     */
+    public function send($apiClient): ActionsPaymentResponse
+    {
+        $requestData = array_filter([
+            'merchantId'  => $this->merchantId,
+            'payId'       => $this->payId,
+            'fingerprint' => ($nullsafeVariable1 = $this->fingerprint) ? $nullsafeVariable1->encode() : null,
+        ], EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
+            return !empty($value);
+        } : EncodeHelper::filterValueCallback(), EncodeHelper::filterValueCallback() === null ? ARRAY_FILTER_USE_BOTH : 0);
 
-		/** @var mixed[] $data */
-		$data = $response->getData();
+        $response = $apiClient->post('oneclick/process', $requestData, new SignatureDataFormatter([
+            'merchantId'  => null,
+            'payId'       => null,
+            'dttm'        => null,
+            'fingerprint' => Fingerprint::encodeForSignature(),
+        ]), new SignatureDataFormatter(ActionsPaymentResponse::encodeForSignature()));
 
-		return ActionsPaymentResponse::createFromResponseData($data);
-	}
+        /** @var mixed[] $data */
+        $data = $response->getData();
+
+        return ActionsPaymentResponse::createFromResponseData($data);
+    }
 
 }

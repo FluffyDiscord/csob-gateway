@@ -29,7 +29,7 @@ class LogisticsMallPayRequestTest extends TestCase
 			->with('mallpay/logistics', [
 				'merchantId' => '012345',
 				'payId' => '12345',
-				'event' => LogisticsEvent::SENT->value,
+				'event' => LogisticsEvent::SENT,
 				'date' => '20210505',
 				'fulfilled' => [
 					'totalPrice' => [
@@ -54,35 +54,21 @@ class LogisticsMallPayRequestTest extends TestCase
 					],
 				],
 				'deliveryTrackingNumber' => '876',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20210505092159',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
 					'paymentStatus' => 1,
 					'mallpayUrl' => 'https://mallpay.cz',
-				]),
-			);
+				]));
 
-		$orderReference = new OrderReference(
-			new Price(200, Currency::EUR),
-			[
+		$orderReference = new OrderReference(new Price(200, Currency::EUR), [
 				new Vat(40, Currency::EUR, 20),
-			],
-		);
+			]);
 		$orderReference->addItem('123', '345', 'Super věc', OrderItemType::PHYSICAL, 2);
 
-		$request = new LogisticsMallPayRequest(
-			'012345',
-			'12345',
-			LogisticsEvent::SENT,
-			new DateTimeImmutable('2021-05-05 09:21:59'),
-			$orderReference,
-			null,
-			'876',
-		);
+		$request = new LogisticsMallPayRequest('012345', '12345', LogisticsEvent::SENT, new DateTimeImmutable('2021-05-05 09:21:59'), $orderReference, null, '876');
 
 		$response = $request->send($apiClient);
 

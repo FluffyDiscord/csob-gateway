@@ -21,22 +21,16 @@ class ReversePaymentRequestTest extends TestCase
 			->with('payment/reverse', [
 				'merchantId' => '012345',
 				'payId' => '123456789',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
 					'paymentStatus' => 5,
 					'statusDetail' => 'Status detail',
-				]),
-			);
+				]));
 
-		$reversePaymentRequest = new ReversePaymentRequest(
-			'012345',
-			'123456789',
-		);
+		$reversePaymentRequest = new ReversePaymentRequest('012345', '123456789');
 
 		$response = $reversePaymentRequest->send($apiClient);
 

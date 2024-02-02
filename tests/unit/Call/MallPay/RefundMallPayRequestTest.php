@@ -35,26 +35,18 @@ class RefundMallPayRequestTest extends TestCase
 						'quantity' => 2,
 					],
 				],
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20210505092159',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
 					'paymentStatus' => 1,
 					'mallpayUrl' => 'https://mallpay.cz',
-				]),
-			);
+				]));
 
-		$request = new RefundMallPayRequest(
-			'012345',
-			'12345',
-			10000,
-			[
+		$request = new RefundMallPayRequest('012345', '12345', 10000, [
 				new OrderItemReference('123', '345', 'Super věc', OrderItemType::PHYSICAL, 2),
-			],
-		);
+			]);
 
 		$response = $request->send($apiClient);
 

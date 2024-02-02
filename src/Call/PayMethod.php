@@ -1,10 +1,8 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
-enum PayMethod: string
+class PayMethod
 {
-
-	case CARD = 'card';
-
+    public const CARD = 'card';
 }

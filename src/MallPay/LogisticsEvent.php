@@ -1,11 +1,9 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\MallPay;
 
-enum LogisticsEvent: string
+class LogisticsEvent
 {
-
-	case DELIVERED = 'delivered';
-	case SENT = 'sent';
-
+    public const DELIVERED = 'delivered';
+    public const SENT = 'sent';
 }

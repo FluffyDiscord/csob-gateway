@@ -1,11 +1,9 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\MallPay;
 
-enum AddressType: string
+class AddressType
 {
-
-	case DELIVERY = 'DELIVERY';
-	case BILLING = 'BILLING';
-
+    public const DELIVERY = 'DELIVERY';
+    public const BILLING = 'BILLING';
 }

@@ -1,17 +1,15 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\AdditionalData;
 
-enum FingerprintBrowserColorDepth : int
+class FingerprintBrowserColorDepth
 {
-
-	case DEPTH_1 = 1;
-	case DEPTH_4 = 4;
-	case DEPTH_8 = 8;
-	case DEPTH_15 = 15;
-	case DEPTH_16 = 16;
-	case DEPTH_24 = 24;
-	case DEPTH_32 = 32;
-	case DEPTH_48 = 48;
-
+    public const DEPTH_1 = 1;
+    public const DEPTH_4 = 4;
+    public const DEPTH_8 = 8;
+    public const DEPTH_15 = 15;
+    public const DEPTH_16 = 16;
+    public const DEPTH_24 = 24;
+    public const DEPTH_32 = 32;
+    public const DEPTH_48 = 48;
 }

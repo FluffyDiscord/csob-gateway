@@ -12,22 +12,7 @@ class OrderItemTest extends TestCase
 
 	public function testEncode(): void
 	{
-		$orderItem = new OrderItem(
-			'123',
-			'345',
-			'Super věc',
-			OrderItemType::PHYSICAL,
-			2,
-			'Varianta 1',
-			'Popisek',
-			'Producer',
-			['kategorie 1', 'kategorie 2'],
-			new Price(100, Currency::EUR),
-			new Vat(20, Currency::EUR, 20),
-			new Price(200, Currency::EUR),
-			new Vat(40, Currency::EUR, 20),
-			'https://obchod.cz/produkt/123-345',
-		);
+		$orderItem = new OrderItem('123', '345', 'Super věc', OrderItemType::PHYSICAL, 2, 'Varianta 1', 'Popisek', 'Producer', ['kategorie 1', 'kategorie 2'], new Price(100, Currency::EUR), new Vat(20, Currency::EUR, 20), new Price(200, Currency::EUR), new Vat(40, Currency::EUR, 20), 'https://obchod.cz/produkt/123-345');
 
 		$expected = [
 			'code' => '123',
@@ -102,65 +87,20 @@ class OrderItemTest extends TestCase
 	public function testValidation(): void
 	{
 		try {
-			new OrderItem(
-				'123 123 123 123 123 123 123 123 123 123 123 123 123 123',
-				'345',
-				'Super věc',
-				OrderItemType::PHYSICAL,
-				2,
-				'Varianta 1',
-				'Popisek',
-				'Producer',
-				['kategorie 1', 'kategorie 2'],
-				new Price(100, Currency::EUR),
-				new Vat(20, Currency::EUR, 20),
-				new Price(200, Currency::EUR),
-				new Vat(40, Currency::EUR, 20),
-				'https://obchod.cz/produkt/123-345',
-			);
+			new OrderItem('123 123 123 123 123 123 123 123 123 123 123 123 123 123', '345', 'Super věc', OrderItemType::PHYSICAL, 2, 'Varianta 1', 'Popisek', 'Producer', ['kategorie 1', 'kategorie 2'], new Price(100, Currency::EUR), new Vat(20, Currency::EUR, 20), new Price(200, Currency::EUR), new Vat(40, Currency::EUR, 20), 'https://obchod.cz/produkt/123-345');
 
 			self::fail();
 		} catch (InvalidArgumentException $e) {
 			self::assertSame('Field must have maximum of 50 characters.', $e->getMessage());
 		}
 		try {
-			new OrderItem(
-				'123',
-				'345',
-				'Super věc',
-				OrderItemType::PHYSICAL,
-				-2,
-				'Varianta 1',
-				'Popisek',
-				'Producer',
-				['kategorie 1', 'kategorie 2'],
-				new Price(100, Currency::EUR),
-				new Vat(20, Currency::EUR, 20),
-				new Price(200, Currency::EUR),
-				new Vat(40, Currency::EUR, 20),
-				'https://obchod.cz/produkt/123-345',
-			);
+			new OrderItem('123', '345', 'Super věc', OrderItemType::PHYSICAL, -2, 'Varianta 1', 'Popisek', 'Producer', ['kategorie 1', 'kategorie 2'], new Price(100, Currency::EUR), new Vat(20, Currency::EUR, 20), new Price(200, Currency::EUR), new Vat(40, Currency::EUR, 20), 'https://obchod.cz/produkt/123-345');
 			self::fail();
 		} catch (InvalidArgumentException $e) {
 			self::assertSame('Value is negative or zero.', $e->getMessage());
 		}
 		try {
-			new OrderItem(
-				'123',
-				'345',
-				'Super věc',
-				OrderItemType::PHYSICAL,
-				2,
-				'Varianta 1',
-				'Popisek',
-				'Producer',
-				['kategorie 1', 'kategorie 2'],
-				new Price(100, Currency::EUR),
-				new Vat(20, Currency::EUR, 20),
-				new Price(200, Currency::EUR),
-				new Vat(40, Currency::EUR, 20),
-				'https://obc hod.cz/produkt/123-345',
-			);
+			new OrderItem('123', '345', 'Super věc', OrderItemType::PHYSICAL, 2, 'Varianta 1', 'Popisek', 'Producer', ['kategorie 1', 'kategorie 2'], new Price(100, Currency::EUR), new Vat(20, Currency::EUR, 20), new Price(200, Currency::EUR), new Vat(40, Currency::EUR, 20), 'https://obc hod.cz/produkt/123-345');
 			self::fail();
 		} catch (InvalidArgumentException $e) {
 			self::assertSame('URL is not valid.', $e->getMessage());

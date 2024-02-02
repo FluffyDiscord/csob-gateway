@@ -22,9 +22,7 @@ class EchoApplePayRequestTest extends TestCase
 		$apiClient->expects(self::once())->method('post')
 			->with('applepay/echo', [
 				'merchantId' => '012345',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'dttm' => '20190425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
@@ -33,8 +31,7 @@ class EchoApplePayRequestTest extends TestCase
 						'supportedNetworks' => ['visa', 'masterCard', 'maestro'],
 						'merchantCapabilities' => ['supports3DS'],
 					],
-				]),
-			);
+				]));
 
 		$request = new EchoApplePayRequest('012345');
 
@@ -43,7 +40,7 @@ class EchoApplePayRequestTest extends TestCase
 		self::assertEquals(DateTimeImmutable::createFromFormat('YmdHis', '20190425131559'), $response->getResponseDateTime());
 		self::assertSame(ResultCode::C0_OK, $response->getResultCode());
 		self::assertSame('OK', $response->getResultMessage());
-		self::assertSame(Country::CZE, $response->getInitParams()?->getCountryCode());
+		self::assertSame(Country::CZE, ($nullsafeVariable1 = $response->getInitParams()) ? $nullsafeVariable1->getCountryCode() : null);
 		self::assertSame(['visa', 'masterCard', 'maestro'], $response->getInitParams()->getSupportedNetworks());
 		self::assertSame(['supports3DS'], $response->getInitParams()->getMerchantCapabilities());
 	}

@@ -1,47 +1,55 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call\MallPay;
 
-use SlevomatCsobGateway\Api\ApiClient;
 use SlevomatCsobGateway\Call\StatusDetailPaymentResponse;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
-use SlevomatCsobGateway\MallPay\CancelReason;
 
 class CancelMallPayRequest
 {
 
-	public function __construct(
-		private string $merchantId,
-		private string $payId,
-		private CancelReason $reason,
-	)
-	{
-	}
+    /**
+     * @var string
+     */
+    private $merchantId;
+    /**
+     * @var string
+     */
+    private $payId;
+    /**
+     * @var string
+     */
+    private $reason;
 
-	public function send(ApiClient $apiClient): StatusDetailPaymentResponse
-	{
-		$requestData = [
-			'merchantId' => $this->merchantId,
-			'payId' => $this->payId,
-			'reason' => $this->reason->value,
-		];
+    public function __construct(string $merchantId, string $payId, string $reason)
+    {
+        $this->merchantId = $merchantId;
+        $this->payId = $payId;
+        $this->reason = $reason;
+    }
 
-		$response = $apiClient->put(
-			'mallpay/cancel',
-			$requestData,
-			new SignatureDataFormatter([
-				'merchantId' => null,
-				'payId' => null,
-				'reason' => null,
-				'dttm' => null,
-			]),
-			new SignatureDataFormatter(StatusDetailPaymentResponse::encodeForSignature()),
-		);
+    /**
+     * @param \SlevomatCsobGateway\Api\ApiClient $apiClient
+     */
+    public function send($apiClient): StatusDetailPaymentResponse
+    {
+        $requestData = [
+            'merchantId' => $this->merchantId,
+            'payId'      => $this->payId,
+            'reason'     => $this->reason,
+        ];
 
-		/** @var mixed[] $data */
-		$data = $response->getData();
+        $response = $apiClient->put('mallpay/cancel', $requestData, new SignatureDataFormatter([
+            'merchantId' => null,
+            'payId'      => null,
+            'reason'     => null,
+            'dttm'       => null,
+        ]), new SignatureDataFormatter(StatusDetailPaymentResponse::encodeForSignature()));
 
-		return StatusDetailPaymentResponse::createFromResponseData($data);
-	}
+        /** @var mixed[] $data */
+        $data = $response->getData();
+
+        return StatusDetailPaymentResponse::createFromResponseData($data);
+    }
 
 }

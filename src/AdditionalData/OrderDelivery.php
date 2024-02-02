@@ -1,15 +1,13 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\AdditionalData;
 
-enum OrderDelivery: string
+class OrderDelivery
 {
-
-	case SHIPPING = 'shipping';
-	case SHIPPING_VERIFIED = 'shipping_verified';
-	case IN_STORE = 'instore';
-	case DIGITAL = 'digital';
-	case TICKET = 'ticket';
-	case OTHER = 'other';
-
+    public const SHIPPING = 'shipping';
+    public const SHIPPING_VERIFIED = 'shipping_verified';
+    public const IN_STORE = 'instore';
+    public const DIGITAL = 'digital';
+    public const TICKET = 'ticket';
+    public const OTHER = 'other';
 }

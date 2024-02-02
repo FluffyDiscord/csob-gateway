@@ -32,27 +32,15 @@ class InitGooglePayRequestTest extends TestCase
 				'payload' => 'Zm9v',
 				'returnUrl' => 'https://shop.example.com/return',
 				'returnMethod' => 'POST',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20190425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
 					'paymentStatus' => 1,
-				]),
-			);
+				]));
 
-		$request = new InitGooglePayRequest(
-			'012345',
-			'12345',
-			'127.0.0.1',
-			new Price(1789600, Currency::CZK),
-			null,
-			['paymentMethodData' => ['tokenizationData' => ['token' => 'foo']]],
-			'https://shop.example.com/return',
-			HttpMethod::POST,
-		);
+		$request = new InitGooglePayRequest('012345', '12345', '127.0.0.1', new Price(1789600, Currency::CZK), null, ['paymentMethodData' => ['tokenizationData' => ['token' => 'foo']]], 'https://shop.example.com/return', HttpMethod::POST);
 
 		$response = $request->send($apiClient);
 

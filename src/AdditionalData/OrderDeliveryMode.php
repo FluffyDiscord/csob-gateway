@@ -1,13 +1,11 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\AdditionalData;
 
-enum OrderDeliveryMode: string
+class OrderDeliveryMode
 {
-
-	case ELECTRONIC = '0';
-	case SAME_DAY = '1';
-	case NEXT_DAY = '2';
-	case TWO_OR_MORE_DAYS = '3';
-
+    public const ELECTRONIC = '0';
+    public const SAME_DAY = '1';
+    public const NEXT_DAY = '2';
+    public const TWO_OR_MORE_DAYS = '3';
 }

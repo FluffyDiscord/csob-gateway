@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Api\Driver;
 
@@ -19,46 +19,52 @@ use function json_encode;
 class GuzzleDriver implements ApiClientDriver
 {
 
-	public function __construct(private Client $client)
-	{
-	}
+    /**
+     * @var \GuzzleHttp\Client
+     */
+    private $client;
 
-	/**
-	 * @param mixed[]|null $data
-	 * @param string[] $headers
-	 *
-	 * @throws GuzzleDriverException
-	 */
-	public function request(HttpMethod $method, string $url, ?array $data, array $headers = []): Response
-	{
-		$postData = null;
-		if ($method === HttpMethod::POST || $method === HttpMethod::PUT) {
-			$postData = (string) json_encode($data);
-		}
-		$headers += ['Content-Type' => 'application/json'];
-		$request = new Request($method->value, $url, $headers, $postData);
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
 
-		try {
-			$httpResponse = $this->client->send($request, [
-				RequestOptions::HTTP_ERRORS => false,
-				RequestOptions::ALLOW_REDIRECTS => false,
-			]);
+    /**
+     * @param mixed[]|null $data
+     * @param string[] $headers
+     *
+     * @param string $method
+     * @param string $url
+     * @throws GuzzleDriverException
+     */
+    public function request($method, $url, $data, $headers = []): Response
+    {
+        $postData = null;
+        if ($method === HttpMethod::POST || $method === HttpMethod::PUT) {
+            $postData = (string)json_encode($data);
+        }
+        $headers += ['Content-Type' => 'application/json'];
+        $request = new Request($method, $url, $headers, $postData);
 
-			$responseCode = ResponseCode::from($httpResponse->getStatusCode());
+        try {
+            $httpResponse = $this->client->send($request, [
+                RequestOptions::HTTP_ERRORS     => false,
+                RequestOptions::ALLOW_REDIRECTS => false,
+            ]);
 
-			/** @var string[]|string[][] $responseHeaders */
-			$responseHeaders = array_map(static fn ($item) => count($item) > 1
-					? $item
-					: array_shift($item), $httpResponse->getHeaders());
+            $responseCode = $httpResponse->getStatusCode();
 
-			return new Response(
-				$responseCode,
-				json_decode((string) $httpResponse->getBody(), true),
-				$responseHeaders,
-			);
-		} catch (Throwable $e) {
-			throw new GuzzleDriverException($e);
-		}
-	}
+            /** @var string[]|string[][] $responseHeaders */
+            $responseHeaders = array_map(static function ($item) {
+                return count($item) > 1
+                    ? $item
+                    : array_shift($item);
+            }, $httpResponse->getHeaders());
+
+            return new Response($responseCode, json_decode((string)$httpResponse->getBody(), true), $responseHeaders);
+        } catch (Throwable $e) {
+            throw new GuzzleDriverException($e);
+        }
+    }
 
 }

@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call\MallPay;
 
@@ -13,58 +13,53 @@ use function array_merge;
 class InitMallPayResponse extends PaymentResponse
 {
 
-	public function __construct(
-		string $payId,
-		DateTimeImmutable $responseDateTime,
-		ResultCode $resultCode,
-		string $resultMessage,
-		?PaymentStatus $paymentStatus,
-		private ?string $mallpayUrl = null,
-	)
-	{
-		parent::__construct($payId, $responseDateTime, $resultCode, $resultMessage, $paymentStatus);
-	}
+    /**
+     * @var string|null
+     */
+    private $mallpayUrl;
 
-	/**
-	 * @param mixed[] $data
-	 */
-	public static function createFromResponseData(array $data): self
-	{
-		$paymentResponse = parent::createFromResponseData($data);
+    public function __construct(string $payId, DateTimeImmutable $responseDateTime, int $resultCode, string $resultMessage, ?int $paymentStatus, ?string $mallpayUrl = null)
+    {
+        $this->mallpayUrl = $mallpayUrl;
+        parent::__construct($payId, $responseDateTime, $resultCode, $resultMessage, $paymentStatus);
+    }
 
-		return new self(
-			$paymentResponse->getPayId(),
-			$paymentResponse->getResponseDateTime(),
-			$paymentResponse->getResultCode(),
-			$paymentResponse->getResultMessage(),
-			$paymentResponse->getPaymentStatus(),
-			$data['mallpayUrl'] ?? null,
-		);
-	}
+    /**
+     * @param mixed[] $data
+     * @return $this
+     */
+    public static function createFromResponseData($data): \SlevomatCsobGateway\Call\Response
+    {
+        $paymentResponse = parent::createFromResponseData($data);
 
-	/**
-	 * @return mixed[]
-	 */
-	public static function encodeForSignature(): array
-	{
-		return array_merge(parent::encodeForSignature(), [
-			'mallpayUrl' => null,
-		]);
-	}
+        return new self($paymentResponse->getPayId(), $paymentResponse->getResponseDateTime(), $paymentResponse->getResultCode(), $paymentResponse->getResultMessage(), $paymentResponse->getPaymentStatus(), $data['mallpayUrl'] ?? null);
+    }
 
-	/**
-	 * @return mixed[]
-	 */
-	public function encode(): array
-	{
-		return array_filter(array_merge(parent::encode(), [
-			'mallpayUrl' => $this->mallpayUrl,
-		]), EncodeHelper::filterValueCallback());
-	}
+    /**
+     * @return mixed[]
+     */
+    public static function encodeForSignature(): array
+    {
+        return array_merge(parent::encodeForSignature(), [
+            'mallpayUrl' => null,
+        ]);
+    }
 
-	public function getMallpayUrl(): ?string
-	{
-		return $this->mallpayUrl;
-	}
+    /**
+     * @return mixed[]
+     */
+    public function encode(): array
+    {
+        return array_filter(array_merge(parent::encode(), [
+            'mallpayUrl' => $this->mallpayUrl,
+        ]), EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
+            return !empty($value);
+        } : EncodeHelper::filterValueCallback(), EncodeHelper::filterValueCallback() === null ? ARRAY_FILTER_USE_BOTH : 0);
+    }
+
+    public function getMallpayUrl(): ?string
+    {
+        return $this->mallpayUrl;
+    }
 
 }

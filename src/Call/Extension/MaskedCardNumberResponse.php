@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call\Extension;
 
@@ -7,27 +7,39 @@ use DateTimeImmutable;
 class MaskedCardNumberResponse
 {
 
-	public function __construct(
-		private string $longMaskedCln,
-		private string $maskedCln,
-		private DateTimeImmutable $expiration,
-	)
-	{
-	}
+    /**
+     * @var string
+     */
+    private $longMaskedCln;
+    /**
+     * @var string
+     */
+    private $maskedCln;
+    /**
+     * @var \DateTimeImmutable
+     */
+    private $expiration;
 
-	public function getLongMaskedCln(): string
-	{
-		return $this->longMaskedCln;
-	}
+    public function __construct(string $longMaskedCln, string $maskedCln, DateTimeImmutable $expiration)
+    {
+        $this->longMaskedCln = $longMaskedCln;
+        $this->maskedCln = $maskedCln;
+        $this->expiration = $expiration;
+    }
 
-	public function getMaskedCln(): string
-	{
-		return $this->maskedCln;
-	}
+    public function getLongMaskedCln(): string
+    {
+        return $this->longMaskedCln;
+    }
 
-	public function getExpiration(): DateTimeImmutable
-	{
-		return $this->expiration;
-	}
+    public function getMaskedCln(): string
+    {
+        return $this->maskedCln;
+    }
+
+    public function getExpiration(): DateTimeImmutable
+    {
+        return $this->expiration;
+    }
 
 }

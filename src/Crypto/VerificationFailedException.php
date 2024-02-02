@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Crypto;
 
@@ -8,28 +8,36 @@ use function sprintf;
 class VerificationFailedException extends RuntimeException
 {
 
-	/**
-	 * @param mixed[] $data
-	 */
-	public function __construct(private array $data, private string $errorMessage)
-	{
-		parent::__construct(sprintf(
-			'Verification failed: %s',
-			$errorMessage,
-		));
-	}
+    /**
+     * @var mixed[]
+     */
+    private $data;
+    /**
+     * @var string
+     */
+    private $errorMessage;
 
-	/**
-	 * @return mixed[]
-	 */
-	public function getData(): array
-	{
-		return $this->data;
-	}
+    /**
+     * @param mixed[] $data
+     */
+    public function __construct(array $data, string $errorMessage)
+    {
+        $this->data = $data;
+        $this->errorMessage = $errorMessage;
+        parent::__construct(sprintf('Verification failed: %s', $errorMessage));
+    }
 
-	public function getErrorMessage(): string
-	{
-		return $this->errorMessage;
-	}
+    /**
+     * @return mixed[]
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    public function getErrorMessage(): string
+    {
+        return $this->errorMessage;
+    }
 
 }

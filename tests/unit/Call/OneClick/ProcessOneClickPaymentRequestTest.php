@@ -35,9 +35,7 @@ class ProcessOneClickPaymentRequestTest extends TestCase
 						'transID' => '7f101033-df46-4f5c-9e96-9575c924e1e7',
 					],
 				],
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
@@ -53,24 +51,9 @@ class ProcessOneClickPaymentRequestTest extends TestCase
 							],
 						],
 					],
-				]),
-			);
+				]));
 
-		$request = new ProcessOneClickPaymentRequest(
-			'012345',
-			'ef08b6e9f22345c',
-			new Fingerprint(
-				null,
-				new FingerprintSdk(
-					'198d0791-0025-4183-b9ae-900c88dd80e0',
-					'encrypted-data',
-					'encoded-public-key',
-					5,
-					'sdk-reference-number',
-					'7f101033-df46-4f5c-9e96-9575c924e1e7',
-				),
-			),
-		);
+		$request = new ProcessOneClickPaymentRequest('012345', 'ef08b6e9f22345c', new Fingerprint(null, new FingerprintSdk('198d0791-0025-4183-b9ae-900c88dd80e0', 'encrypted-data', 'encoded-public-key', 5, 'sdk-reference-number', '7f101033-df46-4f5c-9e96-9575c924e1e7')));
 
 		$response = $request->send($apiClient);
 
@@ -79,8 +62,8 @@ class ProcessOneClickPaymentRequestTest extends TestCase
 		self::assertSame(ResultCode::C0_OK, $response->getResultCode());
 		self::assertSame('OK', $response->getResultMessage());
 		self::assertSame(PaymentStatus::S2_IN_PROGRESS, $response->getPaymentStatus());
-		self::assertNull($response->getActions()?->getFingerprint());
-		self::assertSame('eeddda80-6ca7-4b22-9d6a-eb8e84791ec9', $response->getActions()?->getAuthenticate()?->getSdkChallenge()?->getThreeDSServerTransID());
+		self::assertNull(($nullsafeVariable1 = $response->getActions()) ? $nullsafeVariable1->getFingerprint() : null);
+		self::assertSame('eeddda80-6ca7-4b22-9d6a-eb8e84791ec9', ($nullsafeVariable2 = ($nullsafeVariable3 = ($nullsafeVariable4 = $response->getActions()) ? $nullsafeVariable4->getAuthenticate() : null) ? $nullsafeVariable3->getSdkChallenge() : null) ? $nullsafeVariable2->getThreeDSServerTransID() : null);
 		self::assertSame('3DS_LOA_ACS_201_13579', $response->getActions()->getAuthenticate()->getSdkChallenge()->getAcsReferenceNumber());
 		self::assertSame('7f3296a8-08c4-4afb-a3e2-8ce31b2e9069', $response->getActions()->getAuthenticate()->getSdkChallenge()->getAcsTransID());
 		self::assertSame('base64-encoded-acs-signed-content', $response->getActions()->getAuthenticate()->getSdkChallenge()->getAcsSignedContent());

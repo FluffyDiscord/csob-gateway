@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
@@ -9,43 +9,53 @@ use function array_filter;
 class ActionsFingerprint implements Encodable
 {
 
-	public function __construct(
-		private ?ActionsEndpoint $browserInit = null,
-		private ?ActionsFingerprintSdkInit $sdkInit = null,
-	)
-	{
-	}
+    /**
+     * @var \SlevomatCsobGateway\Call\ActionsEndpoint|null
+     */
+    private $browserInit;
+    /**
+     * @var \SlevomatCsobGateway\Call\ActionsFingerprintSdkInit|null
+     */
+    private $sdkInit;
 
-	/**
-	 * @return mixed[]
-	 */
-	public static function encodeForSignature(): array
-	{
-		return [
-			'browserInit' => ActionsEndpoint::encodeForSignature(),
-			'sdkInit' => ActionsFingerprintSdkInit::encodeForSignature(),
-		];
-	}
+    public function __construct(?ActionsEndpoint $browserInit = null, ?ActionsFingerprintSdkInit $sdkInit = null)
+    {
+        $this->browserInit = $browserInit;
+        $this->sdkInit = $sdkInit;
+    }
 
-	/**
-	 * @return mixed[]
-	 */
-	public function encode(): array
-	{
-		return array_filter([
-			'browserInit' => $this->browserInit?->encode(),
-			'sdkInit' => $this->sdkInit?->encode(),
-		], EncodeHelper::filterValueCallback());
-	}
+    /**
+     * @return mixed[]
+     */
+    public static function encodeForSignature(): array
+    {
+        return [
+            'browserInit' => ActionsEndpoint::encodeForSignature(),
+            'sdkInit'     => ActionsFingerprintSdkInit::encodeForSignature(),
+        ];
+    }
 
-	public function getBrowserInit(): ?ActionsEndpoint
-	{
-		return $this->browserInit;
-	}
+    /**
+     * @return mixed[]
+     */
+    public function encode(): array
+    {
+        return array_filter([
+            'browserInit' => ($nullsafeVariable1 = $this->browserInit) ? $nullsafeVariable1->encode() : null,
+            'sdkInit'     => ($nullsafeVariable2 = $this->sdkInit) ? $nullsafeVariable2->encode() : null,
+        ], EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
+            return !empty($value);
+        } : EncodeHelper::filterValueCallback(), EncodeHelper::filterValueCallback() === null ? ARRAY_FILTER_USE_BOTH : 0);
+    }
 
-	public function getSdkInit(): ?ActionsFingerprintSdkInit
-	{
-		return $this->sdkInit;
-	}
+    public function getBrowserInit(): ?ActionsEndpoint
+    {
+        return $this->browserInit;
+    }
+
+    public function getSdkInit(): ?ActionsFingerprintSdkInit
+    {
+        return $this->sdkInit;
+    }
 
 }

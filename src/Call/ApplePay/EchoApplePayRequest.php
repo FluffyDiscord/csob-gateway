@@ -1,37 +1,40 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call\ApplePay;
 
-use SlevomatCsobGateway\Api\ApiClient;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 
 class EchoApplePayRequest
 {
 
-	public function __construct(private string $merchantId)
-	{
-	}
+    /**
+     * @var string
+     */
+    private $merchantId;
 
-	public function send(ApiClient $apiClient): EchoApplePayResponse
-	{
-		$requestData = [
-			'merchantId' => $this->merchantId,
-		];
+    public function __construct(string $merchantId)
+    {
+        $this->merchantId = $merchantId;
+    }
 
-		$response = $apiClient->post(
-			'applepay/echo',
-			$requestData,
-			new SignatureDataFormatter([
-				'merchantId' => null,
-				'dttm' => null,
-			]),
-			new SignatureDataFormatter(EchoApplePayResponse::encodeForSignature()),
-		);
+    /**
+     * @param \SlevomatCsobGateway\Api\ApiClient $apiClient
+     */
+    public function send($apiClient): EchoApplePayResponse
+    {
+        $requestData = [
+            'merchantId' => $this->merchantId,
+        ];
 
-		/** @var mixed[] $data */
-		$data = $response->getData();
+        $response = $apiClient->post('applepay/echo', $requestData, new SignatureDataFormatter([
+            'merchantId' => null,
+            'dttm'       => null,
+        ]), new SignatureDataFormatter(EchoApplePayResponse::encodeForSignature()));
 
-		return EchoApplePayResponse::createFromResponseData($data);
-	}
+        /** @var mixed[] $data */
+        $data = $response->getData();
+
+        return EchoApplePayResponse::createFromResponseData($data);
+    }
 
 }

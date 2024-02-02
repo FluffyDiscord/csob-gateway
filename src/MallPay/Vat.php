@@ -1,56 +1,74 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\MallPay;
 
-use SlevomatCsobGateway\Currency;
 use SlevomatCsobGateway\Encodable;
 use SlevomatCsobGateway\Validator;
 
 class Vat implements Encodable
 {
 
-	public function __construct(private int $amount, private Currency $currency, private int $vatRate)
-	{
-		Validator::checkNumberPositiveOrZero($amount);
-	}
+    /**
+     * @var int
+     */
+    private $amount;
+    /**
+     * @var string
+     */
+    private $currency;
+    /**
+     * @var int
+     */
+    private $vatRate;
 
-	/**
-	 * @return mixed[]
-	 */
-	public function encode(): array
-	{
-		return [
-			'amount' => $this->amount,
-			'currency' => $this->currency->value,
-			'vatRate' => $this->vatRate,
-		];
-	}
+    /**
+     * @param string $currency
+     */
+    public function __construct(int $amount, string $currency, int $vatRate)
+    {
+        $this->amount = $amount;
+        $this->currency = $currency;
+        $this->vatRate = $vatRate;
+        Validator::checkNumberPositiveOrZero($amount);
+    }
 
-	/**
-	 * @return mixed[]
-	 */
-	public static function encodeForSignature(): array
-	{
-		return [
-			'amount' => null,
-			'currency' => null,
-			'vatRate' => null,
-		];
-	}
+    /**
+     * @return mixed[]
+     */
+    public function encode(): array
+    {
+        return [
+            'amount'   => $this->amount,
+            'currency' => $this->currency,
+            'vatRate'  => $this->vatRate,
+        ];
+    }
 
-	public function getAmount(): int
-	{
-		return $this->amount;
-	}
+    /**
+     * @return mixed[]
+     */
+    public static function encodeForSignature(): array
+    {
+        return [
+            'amount'   => null,
+            'currency' => null,
+            'vatRate'  => null,
+        ];
+    }
 
-	public function getCurrency(): Currency
-	{
-		return $this->currency;
-	}
+    public function getAmount(): int
+    {
+        return $this->amount;
+    }
 
-	public function getVatRate(): int
-	{
-		return $this->vatRate;
-	}
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    public function getVatRate(): int
+    {
+        return $this->vatRate;
+    }
 
 }

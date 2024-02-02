@@ -22,22 +22,15 @@ class ClosePaymentRequestTest extends TestCase
 				'merchantId' => '012345',
 				'payId' => '123456789',
 				'totalAmount' => 987,
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
 					'paymentStatus' => 7,
-				]),
-			);
+				]));
 
-		$paymentRequest = new ClosePaymentRequest(
-			'012345',
-			'123456789',
-			987,
-		);
+		$paymentRequest = new ClosePaymentRequest('012345', '123456789', 987);
 
 		$response = $paymentRequest->send($apiClient);
 

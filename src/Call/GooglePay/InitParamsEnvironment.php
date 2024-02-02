@@ -1,11 +1,9 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call\GooglePay;
 
-enum InitParamsEnvironment : string
+class InitParamsEnvironment
 {
-
-	case TEST = 'TEST';
-	case PRODUCTION = 'PRODUCTION';
-
+    public const TEST = 'TEST';
+    public const PRODUCTION = 'PRODUCTION';
 }

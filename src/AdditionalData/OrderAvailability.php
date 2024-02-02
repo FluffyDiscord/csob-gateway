@@ -1,12 +1,10 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\AdditionalData;
 
-enum OrderAvailability: string
+class OrderAvailability
 {
-
-	case NOW = 'now';
-	case PREORDER = 'preorder';
-	case DATE = 'date';
-
+    public const NOW = 'now';
+    public const PREORDER = 'preorder';
+    public const DATE = 'date';
 }

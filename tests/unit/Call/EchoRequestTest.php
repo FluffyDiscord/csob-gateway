@@ -20,18 +20,13 @@ class EchoRequestTest extends TestCase
 		$apiClient->expects(self::once())->method('get')
 			->with('echo/{merchantId}/{dttm}/{signature}', [
 				'merchantId' => '012345',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
-				]),
-			);
+				]));
 
-		$echoRequest = new EchoRequest(
-			'012345',
-		);
+		$echoRequest = new EchoRequest('012345');
 
 		$echoResponse = $echoRequest->send($apiClient);
 

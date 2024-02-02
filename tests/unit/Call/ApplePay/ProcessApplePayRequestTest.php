@@ -33,9 +33,7 @@ class ProcessApplePayRequestTest extends TestCase
 						'javascriptEnabled' => false,
 					],
 				],
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => 'ef08b6e9f22345c',
 					'dttm' => '20190425131559',
 					'resultCode' => 0,
@@ -48,27 +46,9 @@ class ProcessApplePayRequestTest extends TestCase
 							],
 						],
 					],
-				]),
-			);
+				]));
 
-		$request = new ProcessApplePayRequest(
-			'012345',
-			'ef08b6e9f22345c',
-			new Fingerprint(
-				new FingerprintBrowser(
-					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36',
-					'text/html,application/xhtml+xml,application/xml;',
-					'en',
-					false,
-					null,
-					null,
-					null,
-					null,
-					null,
-					null,
-				),
-			),
-		);
+		$request = new ProcessApplePayRequest('012345', 'ef08b6e9f22345c', new Fingerprint(new FingerprintBrowser('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36', 'text/html,application/xhtml+xml,application/xml;', 'en', false, null, null, null, null, null, null)));
 
 		$response = $request->send($apiClient);
 
@@ -78,7 +58,7 @@ class ProcessApplePayRequestTest extends TestCase
 		self::assertSame('OK', $response->getResultMessage());
 		self::assertSame(PaymentStatus::S2_IN_PROGRESS, $response->getPaymentStatus());
 		self::assertNull($response->getStatusDetail());
-		self::assertSame('https://example.com/challenge-endpoint', $response->getActions()?->getAuthenticate()?->getBrowserChallenge()?->getUrl());
+		self::assertSame('https://example.com/challenge-endpoint', ($nullsafeVariable1 = ($nullsafeVariable2 = ($nullsafeVariable3 = $response->getActions()) ? $nullsafeVariable3->getAuthenticate() : null) ? $nullsafeVariable2->getBrowserChallenge() : null) ? $nullsafeVariable1->getUrl() : null);
 	}
 
 }

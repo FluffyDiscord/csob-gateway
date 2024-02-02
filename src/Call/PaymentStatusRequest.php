@@ -1,50 +1,59 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
-use SlevomatCsobGateway\Api\ApiClient;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 use SlevomatCsobGateway\Validator;
 
 class PaymentStatusRequest
 {
 
-	/** @var ResponseExtensionHandler[] */
-	private array $extensions = [];
+    /**
+     * @var string
+     */
+    private $merchantId;
+    /**
+     * @var string
+     */
+    private $payId;
+    /** @var ResponseExtensionHandler[] */
+    private $extensions = [];
 
-	public function __construct(private string $merchantId, private string $payId)
-	{
-		Validator::checkPayId($payId);
-	}
+    public function __construct(string $merchantId, string $payId)
+    {
+        $this->merchantId = $merchantId;
+        $this->payId = $payId;
+        Validator::checkPayId($payId);
+    }
 
-	public function send(ApiClient $apiClient): PaymentStatusResponse
-	{
-		$response = $apiClient->get(
-			'payment/status/{merchantId}/{payId}/{dttm}/{signature}',
-			[
-				'merchantId' => $this->merchantId,
-				'payId' => $this->payId,
-			],
-			new SignatureDataFormatter([
-				'merchantId' => null,
-				'payId' => null,
-				'dttm' => null,
-			]),
-			new SignatureDataFormatter(PaymentStatusResponse::encodeForSignature()),
-			null,
-			$this->extensions,
-		);
+    /**
+     * @param \SlevomatCsobGateway\Api\ApiClient $apiClient
+     */
+    public function send($apiClient): PaymentStatusResponse
+    {
+        $response = $apiClient->get('payment/status/{merchantId}/{payId}/{dttm}/{signature}', [
+            'merchantId' => $this->merchantId,
+            'payId'      => $this->payId,
+        ], new SignatureDataFormatter([
+            'merchantId' => null,
+            'payId'      => null,
+            'dttm'       => null,
+        ]), new SignatureDataFormatter(PaymentStatusResponse::encodeForSignature()), null, $this->extensions);
 
-		/** @var mixed[] $data */
-		$data = $response->getData();
-		$data['extensions'] = $response->getExtensions();
+        /** @var mixed[] $data */
+        $data = $response->getData();
+        $data['extensions'] = $response->getExtensions();
 
-		return PaymentStatusResponse::createFromResponseData($data);
-	}
+        return PaymentStatusResponse::createFromResponseData($data);
+    }
 
-	public function registerExtension(string $name, ResponseExtensionHandler $extensionHandler): void
-	{
-		$this->extensions[$name] = $extensionHandler;
-	}
+    /**
+     * @param string $name
+     * @param \SlevomatCsobGateway\Call\ResponseExtensionHandler $extensionHandler
+     */
+    public function registerExtension($name, $extensionHandler): void
+    {
+        $this->extensions[$name] = $extensionHandler;
+    }
 
 }

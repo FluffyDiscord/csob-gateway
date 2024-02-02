@@ -11,46 +11,9 @@ class OrderTest extends TestCase
 
 	public function testEncode(): void
 	{
-		$order = new Order(
-			Currency::EUR,
-			OrderDeliveryType::DELIVERY_CARRIER,
-			OrderCarrierId::TNT,
-			null,
-		);
-		$order->addItem(
-			'123',
-			'345',
-			'Super věc',
-			OrderItemType::PHYSICAL,
-			2,
-			'Varianta 1',
-			'Popisek',
-			'Producer',
-			['kategorie 1', 'kategorie 2'],
-			100,
-			200,
-			20,
-			40,
-			20,
-			'https://obchod.cz/produkt/123-345',
-		);
-		$order->addItem(
-			'discount',
-			null,
-			'Sleva',
-			OrderItemType::DISCOUNT,
-			2,
-			null,
-			null,
-			null,
-			null,
-			-50,
-			-100,
-			null,
-			0,
-			0,
-			null,
-		);
+		$order = new Order(Currency::EUR, OrderDeliveryType::DELIVERY_CARRIER, OrderCarrierId::TNT, null);
+		$order->addItem('123', '345', 'Super věc', OrderItemType::PHYSICAL, 2, 'Varianta 1', 'Popisek', 'Producer', ['kategorie 1', 'kategorie 2'], 100, 200, 20, 40, 20, 'https://obchod.cz/produkt/123-345');
+		$order->addItem('discount', null, 'Sleva', OrderItemType::DISCOUNT, 2, null, null, null, null, -50, -100, null, 0, 0, null);
 		$order->addAddress('Slevomat', Country::CZE, 'Praha 8', 'Pernerova 691/42', 'xxx', '186 00', AddressType::BILLING);
 
 		$expected = [

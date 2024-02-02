@@ -22,9 +22,7 @@ class PaymentStatusRequestTest extends TestCase
 			->with('payment/status/{merchantId}/{payId}/{dttm}/{signature}', [
 				'merchantId' => '012345',
 				'payId' => '123456789',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
@@ -44,13 +42,9 @@ class PaymentStatusRequestTest extends TestCase
 							],
 						],
 					],
-				]),
-			);
+				]));
 
-		$paymentStatusRequest = new PaymentStatusRequest(
-			'012345',
-			'123456789',
-		);
+		$paymentStatusRequest = new PaymentStatusRequest('012345', '123456789');
 
 		$response = $paymentStatusRequest->send($apiClient);
 
@@ -60,8 +54,8 @@ class PaymentStatusRequestTest extends TestCase
 		self::assertSame('OK', $response->getResultMessage());
 		self::assertSame(PaymentStatus::S4_CONFIRMED, $response->getPaymentStatus());
 		self::assertSame('F7A23E', $response->getAuthCode());
-		self::assertSame('https://example.com/3ds-method-endpoint', $response->getActions()?->getFingerprint()?->getBrowserInit()?->getUrl());
-		self::assertSame('https://example.com/challenge-endpoint', $response->getActions()->getAuthenticate()?->getBrowserChallenge()?->getUrl());
+		self::assertSame('https://example.com/3ds-method-endpoint', ($nullsafeVariable1 = ($nullsafeVariable2 = ($nullsafeVariable3 = $response->getActions()) ? $nullsafeVariable3->getFingerprint() : null) ? $nullsafeVariable2->getBrowserInit() : null) ? $nullsafeVariable1->getUrl() : null);
+		self::assertSame('https://example.com/challenge-endpoint', ($nullsafeVariable4 = ($nullsafeVariable5 = $response->getActions()->getAuthenticate()) ? $nullsafeVariable5->getBrowserChallenge() : null) ? $nullsafeVariable4->getUrl() : null);
 		self::assertSame(HttpMethod::GET, $response->getActions()->getAuthenticate()->getBrowserChallenge()->getMethod());
 	}
 

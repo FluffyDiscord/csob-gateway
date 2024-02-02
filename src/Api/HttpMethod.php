@@ -1,12 +1,10 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Api;
 
-enum HttpMethod: string
+class HttpMethod
 {
-
-	case GET = 'GET';
-	case POST = 'POST';
-	case PUT = 'PUT';
-
+    public const GET = 'GET';
+    public const POST = 'POST';
+    public const PUT = 'PUT';
 }

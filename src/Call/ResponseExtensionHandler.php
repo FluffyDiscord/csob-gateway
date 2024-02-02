@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
@@ -7,11 +7,12 @@ use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 interface ResponseExtensionHandler
 {
 
-	/**
-	 * @param mixed[] $decodeData
-	 */
-	public function createResponse(array $decodeData): mixed;
+    /**
+     * @param mixed[] $decodeData
+     * @return mixed
+     */
+    public function createResponse($decodeData);
 
-	public function getSignatureDataFormatter(): SignatureDataFormatter;
+    public function getSignatureDataFormatter(): SignatureDataFormatter;
 
 }

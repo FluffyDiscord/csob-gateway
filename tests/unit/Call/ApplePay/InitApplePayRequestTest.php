@@ -56,9 +56,7 @@ class InitApplePayRequestTest extends TestCase
 					'deliveryEmail' => 'delivery@example.com',
 					'reorder' => false,
 				],
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20190425131559',
 					'resultCode' => 0,
@@ -73,16 +71,9 @@ class InitApplePayRequestTest extends TestCase
 							],
 						],
 					],
-				]),
-			);
+				]));
 
-		$request = new InitApplePayRequest(
-			'012345',
-			'12345',
-			'127.0.0.1',
-			new Price(1789600, Currency::CZK),
-			true,
-			[
+		$request = new InitApplePayRequest('012345', '12345', '127.0.0.1', new Price(1789600, Currency::CZK), true, [
 				'paymentData' => [
 					'version' => 'EC_v1',
 					'data' => 'zDwclQ1....',
@@ -99,27 +90,7 @@ class InitApplePayRequestTest extends TestCase
 					'type' => 'debit',
 				],
 				'transactionIdentifier' => '5324B499F...',
-			],
-			'https://shop.example.com/return',
-			HttpMethod::POST,
-			new Customer(
-				'Jan Novák',
-				customerLogin: new CustomerLogin(
-					CustomerLoginAuth::FEDERATED,
-					null,
-					'some data',
-				),
-			),
-			new Order(
-				OrderType::PURCHASE,
-				OrderAvailability::NOW,
-				null,
-				OrderDelivery::DIGITAL,
-				OrderDeliveryMode::ELECTRONIC,
-				'delivery@example.com',
-				reorder: false,
-			),
-		);
+			], 'https://shop.example.com/return', HttpMethod::POST, new Customer('Jan Novák', null, null, null, null, null, new CustomerLogin(CustomerLoginAuth::FEDERATED, null, 'some data')), new Order(OrderType::PURCHASE, OrderAvailability::NOW, null, OrderDelivery::DIGITAL, OrderDeliveryMode::ELECTRONIC, 'delivery@example.com', null, null, null, null, null, false));
 
 		$response = $request->send($apiClient);
 
@@ -129,8 +100,8 @@ class InitApplePayRequestTest extends TestCase
 		self::assertSame('OK', $response->getResultMessage());
 		self::assertSame(PaymentStatus::S1_CREATED, $response->getPaymentStatus());
 		self::assertNull($response->getStatusDetail());
-		self::assertNull($response->getActions()?->getAuthenticate());
-		self::assertSame('A000000003', $response->getActions()?->getFingerprint()?->getSdkInit()?->getDirectoryServerID());
+		self::assertNull(($nullsafeVariable1 = $response->getActions()) ? $nullsafeVariable1->getAuthenticate() : null);
+		self::assertSame('A000000003', ($nullsafeVariable2 = ($nullsafeVariable3 = ($nullsafeVariable4 = $response->getActions()) ? $nullsafeVariable4->getFingerprint() : null) ? $nullsafeVariable3->getSdkInit() : null) ? $nullsafeVariable2->getDirectoryServerID() : null);
 		self::assertSame('Visa', $response->getActions()->getFingerprint()->getSdkInit()->getSchemeId());
 		self::assertSame('2.2.0', $response->getActions()->getFingerprint()->getSdkInit()->getMessageVersion());
 	}

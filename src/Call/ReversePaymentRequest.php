@@ -1,39 +1,47 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
-use SlevomatCsobGateway\Api\ApiClient;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 use SlevomatCsobGateway\Validator;
 
 class ReversePaymentRequest
 {
 
-	public function __construct(private string $merchantId, private string $payId)
-	{
-		Validator::checkPayId($payId);
-	}
+    /**
+     * @var string
+     */
+    private $merchantId;
+    /**
+     * @var string
+     */
+    private $payId;
 
-	public function send(ApiClient $apiClient): StatusDetailPaymentResponse
-	{
-		$response = $apiClient->put(
-			'payment/reverse',
-			[
-				'merchantId' => $this->merchantId,
-				'payId' => $this->payId,
-			],
-			new SignatureDataFormatter([
-				'merchantId' => null,
-				'payId' => null,
-				'dttm' => null,
-			]),
-			new SignatureDataFormatter(StatusDetailPaymentResponse::encodeForSignature()),
-		);
+    public function __construct(string $merchantId, string $payId)
+    {
+        $this->merchantId = $merchantId;
+        $this->payId = $payId;
+        Validator::checkPayId($payId);
+    }
 
-		/** @var mixed[] $data */
-		$data = $response->getData();
+    /**
+     * @param \SlevomatCsobGateway\Api\ApiClient $apiClient
+     */
+    public function send($apiClient): StatusDetailPaymentResponse
+    {
+        $response = $apiClient->put('payment/reverse', [
+            'merchantId' => $this->merchantId,
+            'payId'      => $this->payId,
+        ], new SignatureDataFormatter([
+            'merchantId' => null,
+            'payId'      => null,
+            'dttm'       => null,
+        ]), new SignatureDataFormatter(StatusDetailPaymentResponse::encodeForSignature()));
 
-		return StatusDetailPaymentResponse::createFromResponseData($data);
-	}
+        /** @var mixed[] $data */
+        $data = $response->getData();
+
+        return StatusDetailPaymentResponse::createFromResponseData($data);
+    }
 
 }

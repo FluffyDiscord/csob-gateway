@@ -35,33 +35,16 @@ class ProcessGooglePayRequestTest extends TestCase
 						'transID' => '7f101033-df46-4f5c-9e96-9575c924e1e7',
 					],
 				],
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => 'ef08b6e9f22345c',
 					'dttm' => '20190425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
 					'paymentStatus' => 2,
 					'statusDetail' => 'detail',
-				]),
-			);
+				]));
 
-		$request = new ProcessGooglePayRequest(
-			'012345',
-			'ef08b6e9f22345c',
-			new Fingerprint(
-				null,
-				new FingerprintSdk(
-					'198d0791-0025-4183-b9ae-900c88dd80e0',
-					'encrypted-data',
-					'encoded-public-key',
-					5,
-					'sdk-reference-number',
-					'7f101033-df46-4f5c-9e96-9575c924e1e7',
-				),
-			),
-		);
+		$request = new ProcessGooglePayRequest('012345', 'ef08b6e9f22345c', new Fingerprint(null, new FingerprintSdk('198d0791-0025-4183-b9ae-900c88dd80e0', 'encrypted-data', 'encoded-public-key', 5, 'sdk-reference-number', '7f101033-df46-4f5c-9e96-9575c924e1e7')));
 
 		$response = $request->send($apiClient);
 

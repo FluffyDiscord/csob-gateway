@@ -20,18 +20,13 @@ class PostEchoRequestTest extends TestCase
 		$apiClient->expects(self::once())->method('post')
 			->with('echo', [
 				'merchantId' => '012345',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
-				]),
-			);
+				]));
 
-		$echoRequest = new PostEchoRequest(
-			'012345',
-		);
+		$echoRequest = new PostEchoRequest('012345');
 
 		$echoResponse = $echoRequest->send($apiClient);
 

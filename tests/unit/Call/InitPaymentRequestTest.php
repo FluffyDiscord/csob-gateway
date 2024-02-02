@@ -90,73 +90,23 @@ class InitPaymentRequestTest extends TestCase
 				'ttlSec' => 1800,
 				'logoVersion' => 1,
 				'colorSchemeVersion' => 2,
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
 					'paymentStatus' => 1,
-				]),
-			);
+				]));
 
-		$cart = new Cart(
-			Currency::CZK,
-		);
+		$cart = new Cart(Currency::CZK);
 		$cart->addItem('Nákup na vasobchodcz', 1, 1789600, 'Lenovo ThinkPad Edge E540');
 		$cart->addItem('Poštovné', 1, 0, 'Doprava PPL');
 
-		$customer = new Customer(
-			'Jan Novák',
-			'jan.novak@example.com',
-			mobilePhone: '+420.800300300',
-			customerAccount: new CustomerAccount(
-				new DateTimeImmutable('2022-01-12T12:10:37+01:00'),
-				new DateTimeImmutable('2022-01-15T15:10:12+01:00'),
-			),
-			customerLogin: new CustomerLogin(
-				CustomerLoginAuth::ACCOUNT,
-				new DateTimeImmutable('2022-01-25T13:10:03+01:00'),
-			),
-		);
+		$customer = new Customer('Jan Novák', 'jan.novak@example.com', null, null, '+420.800300300', new CustomerAccount(new DateTimeImmutable('2022-01-12T12:10:37+01:00'), new DateTimeImmutable('2022-01-15T15:10:12+01:00')), new CustomerLogin(CustomerLoginAuth::ACCOUNT, new DateTimeImmutable('2022-01-25T13:10:03+01:00')));
 
-		$order = new Order(
-			OrderType::PURCHASE,
-			OrderAvailability::NOW,
-			null,
-			OrderDelivery::SHIPPING,
-			OrderDeliveryMode::SAME_DAY,
-			addressMatch: true,
-			billing: new OrderAddress(
-				'Karlova 1',
-				null,
-				null,
-				'Praha',
-				'11000',
-				null,
-				Country::CZE,
-			),
-		);
+		$order = new Order(OrderType::PURCHASE, OrderAvailability::NOW, null, OrderDelivery::SHIPPING, OrderDeliveryMode::SAME_DAY, null, null, true, new OrderAddress('Karlova 1', null, null, 'Praha', '11000', null, Country::CZE));
 
-		$initPaymentRequest = new InitPaymentRequest(
-			'012345',
-			'5547',
-			PayOperation::PAYMENT,
-			PayMethod::CARD,
-			true,
-			'https://vasobchod.cz/gateway-return',
-			HttpMethod::POST,
-			$cart,
-			$customer,
-			$order,
-			'some-base64-encoded-merchant-data',
-			'123',
-			Language::CZ,
-			1800,
-			1,
-			2,
-		);
+		$initPaymentRequest = new InitPaymentRequest('012345', '5547', PayOperation::PAYMENT, PayMethod::CARD, true, 'https://vasobchod.cz/gateway-return', HttpMethod::POST, $cart, $customer, $order, 'some-base64-encoded-merchant-data', '123', Language::CZ, 1800, 1, 2);
 
 		$response = $initPaymentRequest->send($apiClient);
 

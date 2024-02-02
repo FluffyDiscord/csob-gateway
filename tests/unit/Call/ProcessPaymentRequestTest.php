@@ -20,17 +20,11 @@ class ProcessPaymentRequestTest extends TestCase
 			->with('payment/process/{merchantId}/{payId}/{dttm}/{signature}', [
 				'merchantId' => '012345',
 				'payId' => '123456789',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [], [
+			])->willReturn(new Response(ResponseCode::S200_OK, [], [
 					'Location' => 'https://platebnibrana.csob.cz/pay/vasobchod.cz/6544-4564-sd65111-GF544DS/',
-				]),
-			);
+				]));
 
-		$processPaymentRequest = new ProcessPaymentRequest(
-			'012345',
-			'123456789',
-		);
+		$processPaymentRequest = new ProcessPaymentRequest('012345', '123456789');
 
 		$response = $processPaymentRequest->send($apiClient);
 

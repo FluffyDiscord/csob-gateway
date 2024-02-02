@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
@@ -9,59 +9,77 @@ use function array_filter;
 class ActionsAuthenticateSdkChallenge implements Encodable
 {
 
-	public function __construct(
-		private string $threeDSServerTransID,
-		private string $acsReferenceNumber,
-		private string $acsTransID,
-		private string $acsSignedContent,
-	)
-	{
-	}
+    /**
+     * @var string
+     */
+    private $threeDSServerTransID;
+    /**
+     * @var string
+     */
+    private $acsReferenceNumber;
+    /**
+     * @var string
+     */
+    private $acsTransID;
+    /**
+     * @var string
+     */
+    private $acsSignedContent;
 
-	/**
-	 * @return mixed[]
-	 */
-	public static function encodeForSignature(): array
-	{
-		return [
-			'threeDSServerTransID' => null,
-			'acsReferenceNumber' => null,
-			'acsTransID' => null,
-			'acsSignedContent' => null,
-		];
-	}
+    public function __construct(string $threeDSServerTransID, string $acsReferenceNumber, string $acsTransID, string $acsSignedContent)
+    {
+        $this->threeDSServerTransID = $threeDSServerTransID;
+        $this->acsReferenceNumber = $acsReferenceNumber;
+        $this->acsTransID = $acsTransID;
+        $this->acsSignedContent = $acsSignedContent;
+    }
 
-	/**
-	 * @return mixed[]
-	 */
-	public function encode(): array
-	{
-		return array_filter([
-			'threeDSServerTransID' => $this->threeDSServerTransID,
-			'acsReferenceNumber' => $this->acsReferenceNumber,
-			'acsTransID' => $this->acsTransID,
-			'acsSignedContent' => $this->acsSignedContent,
-		], EncodeHelper::filterValueCallback());
-	}
+    /**
+     * @return mixed[]
+     */
+    public static function encodeForSignature(): array
+    {
+        return [
+            'threeDSServerTransID' => null,
+            'acsReferenceNumber'   => null,
+            'acsTransID'           => null,
+            'acsSignedContent'     => null,
+        ];
+    }
 
-	public function getThreeDSServerTransID(): string
-	{
-		return $this->threeDSServerTransID;
-	}
+    /**
+     * @return mixed[]
+     */
+    public function encode(): array
+    {
+        return array_filter([
+            'threeDSServerTransID' => $this->threeDSServerTransID,
+            'acsReferenceNumber'   => $this->acsReferenceNumber,
+            'acsTransID'           => $this->acsTransID,
+            'acsSignedContent'     => $this->acsSignedContent,
+        ], EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
+            return !empty($value);
+        } : EncodeHelper::filterValueCallback(), EncodeHelper::filterValueCallback() === null ? ARRAY_FILTER_USE_BOTH : 0);
+    }
 
-	public function getAcsReferenceNumber(): string
-	{
-		return $this->acsReferenceNumber;
-	}
+    public function getThreeDSServerTransID(): string
+    {
+        return $this->threeDSServerTransID;
+    }
 
-	public function getAcsTransID(): string
-	{
-		return $this->acsTransID;
-	}
+    public function getAcsReferenceNumber(): string
+    {
+        return $this->acsReferenceNumber;
+    }
 
-	public function getAcsSignedContent(): string
-	{
-		return $this->acsSignedContent;
-	}
+    public function getAcsTransID(): string
+    {
+        return $this->acsTransID;
+    }
+
+    public function getAcsSignedContent(): string
+    {
+        return $this->acsSignedContent;
+    }
 
 }

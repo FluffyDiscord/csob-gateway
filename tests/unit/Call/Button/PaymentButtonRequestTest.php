@@ -34,9 +34,7 @@ class PaymentButtonRequestTest extends TestCase
 				'returnMethod' => 'GET',
 				'brand' => 'csob',
 				'language' => 'EN',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
@@ -46,20 +44,9 @@ class PaymentButtonRequestTest extends TestCase
 						'method' => 'GET',
 						'url' => 'https://platebnibrana.csob.cz/pay/vasobchod.cz/2c72d818-9788-45a1-878a-9db2a706edc5/pt-detect/csob',
 					],
-				]),
-			);
+				]));
 
-		$request = new PaymentButtonRequest(
-			'012345',
-			'123456789',
-			'127.0.0.1',
-			new Price(12000, Currency::CZK),
-			'https://www.example.com/return',
-			HttpMethod::GET,
-			PaymentButtonBrand::CSOB,
-			null,
-			Language::EN,
-		);
+		$request = new PaymentButtonRequest('012345', '123456789', '127.0.0.1', new Price(12000, Currency::CZK), 'https://www.example.com/return', HttpMethod::GET, PaymentButtonBrand::CSOB, null, Language::EN);
 
 		$response = $request->send($apiClient);
 
@@ -68,7 +55,7 @@ class PaymentButtonRequestTest extends TestCase
 		self::assertSame(ResultCode::C0_OK, $response->getResultCode());
 		self::assertSame('OK', $response->getResultMessage());
 		self::assertSame(PaymentStatus::S1_CREATED, $response->getPaymentStatus());
-		self::assertSame('https://platebnibrana.csob.cz/pay/vasobchod.cz/2c72d818-9788-45a1-878a-9db2a706edc5/pt-detect/csob', $response->getRedirect()?->getUrl());
+		self::assertSame('https://platebnibrana.csob.cz/pay/vasobchod.cz/2c72d818-9788-45a1-878a-9db2a706edc5/pt-detect/csob', ($nullsafeVariable1 = $response->getRedirect()) ? $nullsafeVariable1->getUrl() : null);
 		self::assertSame(HttpMethod::GET, $response->getRedirect()->getMethod());
 		self::assertNull($response->getRedirect()->getParams());
 	}

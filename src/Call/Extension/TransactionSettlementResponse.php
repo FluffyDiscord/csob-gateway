@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call\Extension;
 
@@ -7,27 +7,39 @@ use DateTimeImmutable;
 class TransactionSettlementResponse
 {
 
-	public function __construct(
-		private DateTimeImmutable $createdDate,
-		private ?DateTimeImmutable $authDate = null,
-		private ?DateTimeImmutable $settlementDate = null,
-	)
-	{
-	}
+    /**
+     * @var \DateTimeImmutable
+     */
+    private $createdDate;
+    /**
+     * @var \DateTimeImmutable|null
+     */
+    private $authDate;
+    /**
+     * @var \DateTimeImmutable|null
+     */
+    private $settlementDate;
 
-	public function getCreatedDate(): DateTimeImmutable
-	{
-		return $this->createdDate;
-	}
+    public function __construct(DateTimeImmutable $createdDate, ?DateTimeImmutable $authDate = null, ?DateTimeImmutable $settlementDate = null)
+    {
+        $this->createdDate = $createdDate;
+        $this->authDate = $authDate;
+        $this->settlementDate = $settlementDate;
+    }
 
-	public function getAuthDate(): ?DateTimeImmutable
-	{
-		return $this->authDate;
-	}
+    public function getCreatedDate(): DateTimeImmutable
+    {
+        return $this->createdDate;
+    }
 
-	public function getSettlementDate(): ?DateTimeImmutable
-	{
-		return $this->settlementDate;
-	}
+    public function getAuthDate(): ?DateTimeImmutable
+    {
+        return $this->authDate;
+    }
+
+    public function getSettlementDate(): ?DateTimeImmutable
+    {
+        return $this->settlementDate;
+    }
 
 }

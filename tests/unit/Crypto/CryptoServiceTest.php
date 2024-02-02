@@ -7,14 +7,14 @@ use PHPUnit\Framework\TestCase;
 class CryptoServiceTest extends TestCase
 {
 
-	private CryptoService $cryptoService;
+	/**
+  * @var \SlevomatCsobGateway\Crypto\CryptoService
+  */
+ private $cryptoService;
 
 	protected function setUp(): void
 	{
-		$this->cryptoService = new CryptoService(
-			__DIR__ . '/../../keys/client.key',
-			__DIR__ . '/../../keys/client.pub',
-		);
+		$this->cryptoService = new CryptoService(__DIR__ . '/../../keys/client.key', __DIR__ . '/../../keys/client.pub');
 	}
 
 	/**
@@ -66,11 +66,14 @@ class CryptoServiceTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider getSignDataData
-	 *
-	 * @param mixed[] $data
-	 */
-	public function testSignData(array $data, string $expectedSignature, bool $valid, SignatureDataFormatter $signatureDataFormatter): void
+  * @dataProvider getSignDataData
+  *
+  * @param mixed[] $data
+  * @param string $expectedSignature
+  * @param bool $valid
+  * @param \SlevomatCsobGateway\Crypto\SignatureDataFormatter $signatureDataFormatter
+  */
+ public function testSignData($data, $expectedSignature, $valid, $signatureDataFormatter): void
 	{
 		$signature = $this->cryptoService->signData($data, $signatureDataFormatter);
 
@@ -83,10 +86,7 @@ class CryptoServiceTest extends TestCase
 
 	public function testExceptions(): void
 	{
-		$cryptoService = new CryptoService(
-			__DIR__ . '/invalid-key.key',
-			__DIR__ . '/invalid-key.key',
-		);
+		$cryptoService = new CryptoService(__DIR__ . '/invalid-key.key', __DIR__ . '/invalid-key.key');
 
 		try {
 			$cryptoService->signData([], new SignatureDataFormatter([]));
@@ -112,10 +112,7 @@ class CryptoServiceTest extends TestCase
 	{
 		include __DIR__ . '/GlobalFunctionsMock.php';
 
-		$cryptoService = new CryptoService(
-			__DIR__ . '/../../keys/client.key',
-			__DIR__ . '/../../keys/bank.pub',
-		);
+		$cryptoService = new CryptoService(__DIR__ . '/../../keys/client.key', __DIR__ . '/../../keys/bank.pub');
 
 		try {
 			$cryptoService->signData([], new SignatureDataFormatter([]));
@@ -136,11 +133,14 @@ class CryptoServiceTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider getSignDataData
-	 *
-	 * @param mixed[] $data
-	 */
-	public function testVerifyData(array $data, string $signature, bool $valid, SignatureDataFormatter $signatureDataFormatter): void
+  * @dataProvider getSignDataData
+  *
+  * @param mixed[] $data
+  * @param string $signature
+  * @param bool $valid
+  * @param \SlevomatCsobGateway\Crypto\SignatureDataFormatter $signatureDataFormatter
+  */
+ public function testVerifyData($data, $signature, $valid, $signatureDataFormatter): void
 	{
 		if ($valid) {
 			self::assertTrue($this->cryptoService->verifyData($data, $signature, $signatureDataFormatter));

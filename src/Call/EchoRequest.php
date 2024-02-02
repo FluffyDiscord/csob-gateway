@@ -1,35 +1,38 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
-use SlevomatCsobGateway\Api\ApiClient;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 
 class EchoRequest
 {
 
-	public function __construct(private string $merchantId)
-	{
-	}
+    /**
+     * @var string
+     */
+    private $merchantId;
 
-	public function send(ApiClient $apiClient): EchoResponse
-	{
-		$response = $apiClient->get(
-			'echo/{merchantId}/{dttm}/{signature}',
-			[
-				'merchantId' => $this->merchantId,
-			],
-			new SignatureDataFormatter([
-				'merchantId' => null,
-				'dttm' => null,
-			]),
-			new SignatureDataFormatter(EchoResponse::encodeForSignature()),
-		);
+    public function __construct(string $merchantId)
+    {
+        $this->merchantId = $merchantId;
+    }
 
-		/** @var mixed[] $data */
-		$data = $response->getData();
+    /**
+     * @param \SlevomatCsobGateway\Api\ApiClient $apiClient
+     */
+    public function send($apiClient): EchoResponse
+    {
+        $response = $apiClient->get('echo/{merchantId}/{dttm}/{signature}', [
+            'merchantId' => $this->merchantId,
+        ], new SignatureDataFormatter([
+            'merchantId' => null,
+            'dttm'       => null,
+        ]), new SignatureDataFormatter(EchoResponse::encodeForSignature()));
 
-		return EchoResponse::createFromResponseData($data);
-	}
+        /** @var mixed[] $data */
+        $data = $response->getData();
+
+        return EchoResponse::createFromResponseData($data);
+    }
 
 }

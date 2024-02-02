@@ -1,10 +1,8 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call\Button;
 
-enum PaymentButtonBrand: string
+class PaymentButtonBrand
 {
-
-	case CSOB = 'csob';
-
+    public const CSOB = 'csob';
 }

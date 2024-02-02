@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
@@ -10,67 +10,65 @@ use function array_merge;
 class InitPaymentResponse extends PaymentResponse
 {
 
-	public function __construct(
-		string $payId,
-		DateTimeImmutable $responseDateTime,
-		ResultCode $resultCode,
-		string $resultMessage,
-		?PaymentStatus $paymentStatus,
-		private ?string $customerCode,
-		private ?string $statusDetail,
-	)
-	{
-		parent::__construct($payId, $responseDateTime, $resultCode, $resultMessage, $paymentStatus);
-	}
+    /**
+     * @var string|null
+     */
+    private $customerCode;
+    /**
+     * @var string|null
+     */
+    private $statusDetail;
 
-	/**
-	 * @param mixed[] $data
-	 */
-	public static function createFromResponseData(array $data): self
-	{
-		$paymentResponse = parent::createFromResponseData($data);
+    public function __construct(string $payId, DateTimeImmutable $responseDateTime, int $resultCode, string $resultMessage, ?int $paymentStatus, ?string $customerCode, ?string $statusDetail)
+    {
+        $this->customerCode = $customerCode;
+        $this->statusDetail = $statusDetail;
+        parent::__construct($payId, $responseDateTime, $resultCode, $resultMessage, $paymentStatus);
+    }
 
-		return new self(
-			$paymentResponse->getPayId(),
-			$paymentResponse->getResponseDateTime(),
-			$paymentResponse->getResultCode(),
-			$paymentResponse->getResultMessage(),
-			$paymentResponse->getPaymentStatus(),
-			$data['customerCode'] ?? null,
-			$data['statusDetail'] ?? null,
-		);
-	}
+    /**
+     * @param mixed[] $data
+     * @return $this
+     */
+    public static function createFromResponseData($data): \SlevomatCsobGateway\Call\Response
+    {
+        $paymentResponse = parent::createFromResponseData($data);
 
-	/**
-	 * @return mixed[]
-	 */
-	public static function encodeForSignature(): array
-	{
-		return array_merge(parent::encodeForSignature(), [
-			'customerCode' => null,
-			'statusDetail' => null,
-		]);
-	}
+        return new self($paymentResponse->getPayId(), $paymentResponse->getResponseDateTime(), $paymentResponse->getResultCode(), $paymentResponse->getResultMessage(), $paymentResponse->getPaymentStatus(), $data['customerCode'] ?? null, $data['statusDetail'] ?? null);
+    }
 
-	/**
-	 * @return mixed[]
-	 */
-	public function encode(): array
-	{
-		return array_filter(array_merge(parent::encode(), [
-			'customerCode' => $this->customerCode,
-			'statusDetail' => $this->statusDetail,
-		]), EncodeHelper::filterValueCallback());
-	}
+    /**
+     * @return mixed[]
+     */
+    public static function encodeForSignature(): array
+    {
+        return array_merge(parent::encodeForSignature(), [
+            'customerCode' => null,
+            'statusDetail' => null,
+        ]);
+    }
 
-	public function getCustomerCode(): ?string
-	{
-		return $this->customerCode;
-	}
+    /**
+     * @return mixed[]
+     */
+    public function encode(): array
+    {
+        return array_filter(array_merge(parent::encode(), [
+            'customerCode' => $this->customerCode,
+            'statusDetail' => $this->statusDetail,
+        ]), EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
+            return !empty($value);
+        } : EncodeHelper::filterValueCallback(), EncodeHelper::filterValueCallback() === null ? ARRAY_FILTER_USE_BOTH : 0);
+    }
 
-	public function getStatusDetail(): ?string
-	{
-		return $this->statusDetail;
-	}
+    public function getCustomerCode(): ?string
+    {
+        return $this->customerCode;
+    }
+
+    public function getStatusDetail(): ?string
+    {
+        return $this->statusDetail;
+    }
 
 }

@@ -1,11 +1,10 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Api;
 
 use Closure;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use Psr\Log\LoggerInterface;
 use SlevomatCsobGateway\Call\ResponseExtensionHandler;
 use SlevomatCsobGateway\Crypto\CryptoService;
 use SlevomatCsobGateway\Crypto\PrivateKeyFileException;
@@ -24,331 +23,279 @@ use function urlencode;
 class ApiClient
 {
 
-	private ?LoggerInterface $logger = null;
+    /**
+     * @var \SlevomatCsobGateway\Api\ApiClientDriver
+     */
+    private $driver;
+    /**
+     * @var \SlevomatCsobGateway\Crypto\CryptoService
+     */
+    private $cryptoService;
+    /**
+     * @var \Psr\Log\LoggerInterface|null
+     */
+    private $logger;
 
-	private ?string $apiUrl = null;
+    /**
+     * @var string|null
+     */
+    private $apiUrl;
 
-	public function __construct(
-		private ApiClientDriver $driver,
-		private CryptoService $cryptoService,
-		string $apiUrl,
-	)
-	{
-		$this->apiUrl = $apiUrl;
-	}
+    public function __construct(ApiClientDriver $driver, CryptoService $cryptoService, string $apiUrl)
+    {
+        $this->driver = $driver;
+        $this->cryptoService = $cryptoService;
+        $this->apiUrl = $apiUrl;
+    }
 
-	public function setLogger(?LoggerInterface $logger): void
-	{
-		$this->logger = $logger;
-	}
+    /**
+     * @param \Psr\Log\LoggerInterface|null $logger
+     */
+    public function setLogger($logger): void
+    {
+        $this->logger = $logger;
+    }
 
-	/**
-	 * @param mixed[] $data
-	 * @param ResponseExtensionHandler[] $extensions
-	 *
-	 * @throws PrivateKeyFileException
-	 * @throws SigningFailedException
-	 * @throws PublicKeyFileException
-	 * @throws VerificationFailedException
-	 * @throws RequestException
-	 * @throws ApiClientDriverException
-	 * @throws InvalidSignatureException
-	 */
-	public function get(
-		string $url,
-		array $data,
-		SignatureDataFormatter $requestSignatureDataFormatter,
-		SignatureDataFormatter $responseSignatureDataFormatter,
-		?Closure $responseValidityCallback = null,
-		array $extensions = [],
-	): Response
-	{
-		return $this->request(
-			HttpMethod::GET,
-			$url,
-			$this->prepareData($data, $requestSignatureDataFormatter),
-			null,
-			$responseSignatureDataFormatter,
-			$responseValidityCallback,
-			$extensions,
-		);
-	}
+    /**
+     * @param mixed[] $data
+     * @param ResponseExtensionHandler[] $extensions
+     *
+     * @param string $url
+     * @param \SlevomatCsobGateway\Crypto\SignatureDataFormatter $requestSignatureDataFormatter
+     * @param \SlevomatCsobGateway\Crypto\SignatureDataFormatter $responseSignatureDataFormatter
+     * @param \Closure|null $responseValidityCallback
+     * @throws PrivateKeyFileException
+     * @throws SigningFailedException
+     * @throws PublicKeyFileException
+     * @throws VerificationFailedException
+     * @throws RequestException
+     * @throws ApiClientDriverException
+     * @throws InvalidSignatureException
+     */
+    public function get($url, $data, $requestSignatureDataFormatter, $responseSignatureDataFormatter, $responseValidityCallback = null, $extensions = []): Response
+    {
+        return $this->request(HttpMethod::GET, $url, $this->prepareData($data, $requestSignatureDataFormatter), null, $responseSignatureDataFormatter, $responseValidityCallback, $extensions);
+    }
 
-	/**
-	 * @param mixed[] $data
-	 * @param ResponseExtensionHandler[] $extensions
-	 *
-	 * @throws PrivateKeyFileException
-	 * @throws SigningFailedException
-	 * @throws PublicKeyFileException
-	 * @throws VerificationFailedException
-	 * @throws RequestException
-	 * @throws ApiClientDriverException
-	 * @throws InvalidSignatureException
-	 */
-	public function post(
-		string $url,
-		array $data,
-		SignatureDataFormatter $requestSignatureDataFormatter,
-		SignatureDataFormatter $responseSignatureDataFormatter,
-		array $extensions = [],
-	): Response
-	{
-		return $this->request(
-			HttpMethod::POST,
-			$url,
-			[],
-			$this->prepareData($data, $requestSignatureDataFormatter),
-			$responseSignatureDataFormatter,
-			null,
-			$extensions,
-		);
-	}
+    /**
+     * @param mixed[] $data
+     * @param ResponseExtensionHandler[] $extensions
+     *
+     * @param string $url
+     * @param \SlevomatCsobGateway\Crypto\SignatureDataFormatter $requestSignatureDataFormatter
+     * @param \SlevomatCsobGateway\Crypto\SignatureDataFormatter $responseSignatureDataFormatter
+     * @throws PrivateKeyFileException
+     * @throws SigningFailedException
+     * @throws PublicKeyFileException
+     * @throws VerificationFailedException
+     * @throws RequestException
+     * @throws ApiClientDriverException
+     * @throws InvalidSignatureException
+     */
+    public function post($url, $data, $requestSignatureDataFormatter, $responseSignatureDataFormatter, $extensions = []): Response
+    {
+        return $this->request(HttpMethod::POST, $url, [], $this->prepareData($data, $requestSignatureDataFormatter), $responseSignatureDataFormatter, null, $extensions);
+    }
 
-	/**
-	 * @param mixed[] $data
-	 * @param ResponseExtensionHandler[] $extensions
-	 *
-	 * @throws PrivateKeyFileException
-	 * @throws SigningFailedException
-	 * @throws PublicKeyFileException
-	 * @throws VerificationFailedException
-	 * @throws RequestException
-	 * @throws ApiClientDriverException
-	 * @throws InvalidSignatureException
-	 */
-	public function put(
-		string $url,
-		array $data,
-		SignatureDataFormatter $requestSignatureDataFormatter,
-		SignatureDataFormatter $responseSignatureDataFormatter,
-		array $extensions = [],
-	): Response
-	{
-		return $this->request(
-			HttpMethod::PUT,
-			$url,
-			[],
-			$this->prepareData($data, $requestSignatureDataFormatter),
-			$responseSignatureDataFormatter,
-			null,
-			$extensions,
-		);
-	}
+    /**
+     * @param mixed[] $data
+     * @param ResponseExtensionHandler[] $extensions
+     *
+     * @param string $url
+     * @param \SlevomatCsobGateway\Crypto\SignatureDataFormatter $requestSignatureDataFormatter
+     * @param \SlevomatCsobGateway\Crypto\SignatureDataFormatter $responseSignatureDataFormatter
+     * @throws PrivateKeyFileException
+     * @throws SigningFailedException
+     * @throws PublicKeyFileException
+     * @throws VerificationFailedException
+     * @throws RequestException
+     * @throws ApiClientDriverException
+     * @throws InvalidSignatureException
+     */
+    public function put($url, $data, $requestSignatureDataFormatter, $responseSignatureDataFormatter, $extensions = []): Response
+    {
+        return $this->request(HttpMethod::PUT, $url, [], $this->prepareData($data, $requestSignatureDataFormatter), $responseSignatureDataFormatter, null, $extensions);
+    }
 
-	/**
-	 * @param mixed[] $queries
-	 * @param mixed[]|null $data
-	 * @param ResponseExtensionHandler[] $extensions
-	 *
-	 * @throws PrivateKeyFileException
-	 * @throws SigningFailedException
-	 * @throws PublicKeyFileException
-	 * @throws VerificationFailedException
-	 * @throws RequestException
-	 * @throws ApiClientDriverException
-	 * @throws InvalidSignatureException
-	 */
-	private function request(
-		HttpMethod $method,
-		string $url,
-		array $queries,
-		?array $data,
-		SignatureDataFormatter $responseSignatureDataFormatter,
-		?Closure $responseValidityCallback,
-		array $extensions = [],
-	): Response
-	{
-		$urlFirstQueryPosition = strpos($url, '{');
-		$endpointName = $urlFirstQueryPosition !== false ? substr($url, 0, $urlFirstQueryPosition - 1) : $url;
-		$originalQueries = $queries;
+    /**
+     * @param mixed[] $queries
+     * @param mixed[]|null $data
+     * @param ResponseExtensionHandler[] $extensions
+     *
+     * @throws PrivateKeyFileException
+     * @throws SigningFailedException
+     * @throws PublicKeyFileException
+     * @throws VerificationFailedException
+     * @throws RequestException
+     * @throws ApiClientDriverException
+     * @throws InvalidSignatureException
+     */
+    private function request(string $method, string $url, array $queries, ?array $data, SignatureDataFormatter $responseSignatureDataFormatter, ?Closure $responseValidityCallback, array $extensions = []): Response
+    {
+        $urlFirstQueryPosition = strpos($url, '{');
+        $endpointName = $urlFirstQueryPosition !== false ? substr($url, 0, $urlFirstQueryPosition - 1) : $url;
+        $originalQueries = $queries;
+        foreach ($queries as $key => $value) {
+            if (strpos($url, '{' . $key . '}') === false) {
+                continue;
+            }
 
-		foreach ($queries as $key => $value) {
-			if (strpos($url, '{' . $key . '}') === false) {
-				continue;
-			}
+            $url = str_replace('{' . $key . '}', urlencode((string)$value), $url);
+            unset($queries[$key]);
+        }
+        if ($queries !== []) {
+            throw new InvalidArgumentException('Arguments are missing URL placeholders: ' . json_encode($queries));
+        }
+        $requestStartTime = microtime(true);
+        $response = $this->driver->request($method, $this->apiUrl . '/' . $url, $data);
+        $this->logRequest($method, $endpointName, $originalQueries, $data, $response, microtime(true) - $requestStartTime);
+        if ($responseValidityCallback !== null) {
+            $responseValidityCallback($response);
+        }
+        if ($response->getResponseCode() === ResponseCode::S200_OK) {
+            $decodedExtensions = [];
+            /** @var mixed[]|null $responseData */
+            $responseData = $response->getData();
+            if ($extensions !== [] && $responseData !== null && array_key_exists('extensions', $responseData)) {
+                foreach ($responseData['extensions'] as $extensionData) {
+                    $name = $extensionData['extension'];
+                    if (!isset($extensions[$name])) {
+                        continue;
+                    }
 
-			$url = str_replace('{' . $key . '}', urlencode((string) $value), $url);
-			unset($queries[$key]);
-		}
+                    $handler = $extensions[$name];
+                    $decodedExtensions[$name] = $handler->createResponse($this->decodeData($extensionData, $handler->getSignatureDataFormatter()));
+                }
+            }
+            $responseData = $this->decodeData($responseData ?? [], $responseSignatureDataFormatter);
+            unset($responseData['extensions']);
 
-		if ($queries !== []) {
-			throw new InvalidArgumentException('Arguments are missing URL placeholders: ' . json_encode($queries));
-		}
+            return new Response($response->getResponseCode(), $responseData, $response->getHeaders(), $decodedExtensions);
 
-		$requestStartTime = microtime(true);
+        }
+        if ($response->getResponseCode() === ResponseCode::S303_SEE_OTHER) {
+            return new Response($response->getResponseCode(), null, $response->getHeaders());
 
-		$response = $this->driver->request(
-			$method,
-			$this->apiUrl . '/' . $url,
-			$data,
-		);
+        }
+        if ($response->getResponseCode() === ResponseCode::S400_BAD_REQUEST) {
+            throw new BadRequestException($response);
+        }
+        if ($response->getResponseCode() === ResponseCode::S401_UNAUTHORIZED) {
+            throw new UnauthorizedException($response);
+        }
+        if ($response->getResponseCode() === ResponseCode::S403_FORBIDDEN) {
+            throw new ForbiddenException($response);
+        }
+        if ($response->getResponseCode() === ResponseCode::S404_NOT_FOUND) {
+            throw new NotFoundException($response);
+        }
+        if ($response->getResponseCode() === ResponseCode::S405_METHOD_NOT_ALLOWED) {
+            throw new MethodNotAllowedException($response);
+        }
+        if ($response->getResponseCode() === ResponseCode::S429_TOO_MANY_REQUESTS) {
+            throw new TooManyRequestsException($response);
+        }
+        if ($response->getResponseCode() === ResponseCode::S503_SERVICE_UNAVAILABLE) {
+            throw new ServiceUnavailableException($response);
+        }
+        throw new InternalErrorException($response);
+    }
 
-		$this->logRequest($method, $endpointName, $originalQueries, $data, $response, microtime(true) - $requestStartTime);
+    /**
+     * @param mixed[] $data
+     *
+     * @param \SlevomatCsobGateway\Crypto\SignatureDataFormatter $responseSignatureDataFormatter
+     * @throws PrivateKeyFileException
+     * @throws SigningFailedException
+     * @throws PublicKeyFileException
+     * @throws VerificationFailedException
+     * @throws InvalidSignatureException
+     */
+    public function createResponseByData($data, $responseSignatureDataFormatter): Response
+    {
+        $response = new Response(ResponseCode::S200_OK, $data);
 
-		if ($responseValidityCallback !== null) {
-			$responseValidityCallback($response);
-		}
+        $this->logRequest(HttpMethod::GET, 'payment/response', [], [], $response, 0.0);
 
-		if ($response->getResponseCode() === ResponseCode::S200_OK) {
-			$decodedExtensions = [];
-			/** @var mixed[]|null $responseData */
-			$responseData = $response->getData();
-			if ($extensions !== [] && $responseData !== null && array_key_exists('extensions', $responseData)) {
-				foreach ($responseData['extensions'] as $extensionData) {
-					$name = $extensionData['extension'];
-					if (!isset($extensions[$name])) {
-						continue;
-					}
+        return new Response($response->getResponseCode(), $this->decodeData($data, $responseSignatureDataFormatter), $response->getHeaders());
+    }
 
-					$handler = $extensions[$name];
-					$decodedExtensions[$name] = $handler->createResponse($this->decodeData($extensionData, $handler->getSignatureDataFormatter()));
-				}
-			}
-			$responseData = $this->decodeData($responseData ?? [], $responseSignatureDataFormatter);
-			unset($responseData['extensions']);
+    /**
+     * @param mixed[] $data
+     * @return mixed[]
+     *
+     * @throws PrivateKeyFileException
+     * @throws SigningFailedException
+     */
+    private function prepareData(array $data, SignatureDataFormatter $signatureDataFormatter): array
+    {
+        $data['dttm'] = (new DateTimeImmutable())->format('YmdHis');
+        $data['signature'] = $this->cryptoService->signData($data, $signatureDataFormatter);
 
-			return new Response(
-				$response->getResponseCode(),
-				$responseData,
-				$response->getHeaders(),
-				$decodedExtensions,
-			);
+        return $data;
+    }
 
-		}
-		if ($response->getResponseCode() === ResponseCode::S303_SEE_OTHER) {
-			return new Response(
-				$response->getResponseCode(),
-				null,
-				$response->getHeaders(),
-			);
+    /**
+     * @param mixed[] $responseData
+     * @return mixed[]
+     *
+     * @throws InvalidSignatureException
+     * @throws PublicKeyFileException
+     * @throws VerificationFailedException
+     */
+    private function decodeData(array $responseData, SignatureDataFormatter $signatureDataFormatter): array
+    {
+        if (!array_key_exists('signature', $responseData)) {
+            throw new InvalidSignatureException($responseData);
+        }
 
-		}
-		if ($response->getResponseCode() === ResponseCode::S400_BAD_REQUEST) {
-			throw new BadRequestException($response);
-		}
-		if ($response->getResponseCode() === ResponseCode::S401_UNAUTHORIZED) {
-			throw new UnauthorizedException($response);
-		}
-		if ($response->getResponseCode() === ResponseCode::S403_FORBIDDEN) {
-			throw new ForbiddenException($response);
-		}
-		if ($response->getResponseCode() === ResponseCode::S404_NOT_FOUND) {
-			throw new NotFoundException($response);
-		}
-		if ($response->getResponseCode() === ResponseCode::S405_METHOD_NOT_ALLOWED) {
-			throw new MethodNotAllowedException($response);
-		}
-		if ($response->getResponseCode() === ResponseCode::S429_TOO_MANY_REQUESTS) {
-			throw new TooManyRequestsException($response);
-		}
-		if ($response->getResponseCode() === ResponseCode::S503_SERVICE_UNAVAILABLE) {
-			throw new ServiceUnavailableException($response);
-		}
+        $signature = $responseData['signature'];
+        unset($responseData['signature']);
 
-		throw new InternalErrorException($response);
-	}
+        if (!$this->cryptoService->verifyData($responseData, $signature, $signatureDataFormatter)) {
+            throw new InvalidSignatureException($responseData);
+        }
 
-	/**
-	 * @param mixed[] $data
-	 *
-	 * @throws InvalidSignatureException
-	 * @throws PrivateKeyFileException
-	 * @throws SigningFailedException
-	 * @throws PublicKeyFileException
-	 * @throws VerificationFailedException
-	 */
-	public function createResponseByData(array $data, SignatureDataFormatter $responseSignatureDataFormatter): Response
-	{
-		$response = new Response(
-			ResponseCode::S200_OK,
-			$data,
-		);
+        return $responseData;
+    }
 
-		$this->logRequest(HttpMethod::GET, 'payment/response', [], [], $response, 0.0);
+    /**
+     * @param mixed[] $queries
+     * @param mixed[]|null $requestData
+     * @param string $method
+     */
+    private function logRequest(string $method, string $url, array $queries, ?array $requestData, Response $response, float $responseTime): void
+    {
+        if ($this->logger === null) {
+            return;
+        }
 
-		return new Response(
-			$response->getResponseCode(),
-			$this->decodeData($data, $responseSignatureDataFormatter),
-			$response->getHeaders(),
-		);
-	}
+        $responseData = $response->getData();
 
-	/**
-	 * @param mixed[] $data
-	 * @return mixed[]
-	 *
-	 * @throws PrivateKeyFileException
-	 * @throws SigningFailedException
-	 */
-	private function prepareData(array $data, SignatureDataFormatter $signatureDataFormatter): array
-	{
-		$data['dttm'] = (new DateTimeImmutable())->format('YmdHis');
-		$data['signature'] = $this->cryptoService->signData($data, $signatureDataFormatter);
+        unset($requestData['signature']);
+        unset($queries['signature']);
+        unset($responseData['signature']);
 
-		return $data;
-	}
+        if (isset($responseData['extensions'])) {
+            foreach ($responseData['extensions'] as $key => $extensionData) {
+                unset($responseData['extensions'][$key]['signature']);
+            }
+        }
+        $context = [
+            'request'  => [
+                'method'  => $method,
+                'queries' => $queries,
+                'data'    => $requestData,
+            ],
+            'response' => [
+                'code'    => $response->getResponseCode(),
+                'data'    => $responseData,
+                'headers' => $response->getHeaders(),
+                'time'    => $responseTime,
+            ],
+        ];
 
-	/**
-	 * @param mixed[] $responseData
-	 * @return mixed[]
-	 *
-	 * @throws InvalidSignatureException
-	 * @throws PublicKeyFileException
-	 * @throws VerificationFailedException
-	 */
-	private function decodeData(array $responseData, SignatureDataFormatter $signatureDataFormatter): array
-	{
-		if (!array_key_exists('signature', $responseData)) {
-			throw new InvalidSignatureException($responseData);
-		}
-
-		$signature = $responseData['signature'];
-		unset($responseData['signature']);
-
-		if (!$this->cryptoService->verifyData($responseData, $signature, $signatureDataFormatter)) {
-			throw new InvalidSignatureException($responseData);
-		}
-
-		return $responseData;
-	}
-
-	/**
-	 * @param mixed[] $queries
-	 * @param mixed[]|null $requestData
-	 */
-	private function logRequest(HttpMethod $method, string $url, array $queries, ?array $requestData, Response $response, float $responseTime): void
-	{
-		if ($this->logger === null) {
-			return;
-		}
-
-		$responseData = $response->getData();
-
-		unset($requestData['signature']);
-		unset($queries['signature']);
-		unset($responseData['signature']);
-
-		if (isset($responseData['extensions'])) {
-			foreach ($responseData['extensions'] as $key => $extensionData) {
-				unset($responseData['extensions'][$key]['signature']);
-			}
-		}
-		$context = [
-			'request' => [
-				'method' => $method->value,
-				'queries' => $queries,
-				'data' => $requestData,
-			],
-			'response' => [
-				'code' => $response->getResponseCode()->value,
-				'data' => $responseData,
-				'headers' => $response->getHeaders(),
-				'time' => $responseTime,
-			],
-		];
-
-		$this->logger->info($url, $context);
-	}
+        $this->logger->info($url, $context);
+    }
 
 }

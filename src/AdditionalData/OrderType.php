@@ -1,14 +1,12 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\AdditionalData;
 
-enum OrderType: string
+class OrderType
 {
-
-	case PURCHASE = 'purchase';
-	case BALANCE = 'balance';
-	case PREPAID = 'prepaid';
-	case CASH = 'cash';
-	case CHECK = 'check';
-
+    public const PURCHASE = 'purchase';
+    public const BALANCE = 'balance';
+    public const PREPAID = 'prepaid';
+    public const CASH = 'cash';
+    public const CHECK = 'check';
 }

@@ -21,20 +21,14 @@ class EchoCustomerRequestTest extends TestCase
 			->with('echo/customer', [
 				'merchantId' => '012345',
 				'customerId' => 'cust123@mail.com',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'customerId' => 'cust123@mail.com',
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
-				]),
-			);
+				]));
 
-		$customerInfoRequest = new EchoCustomerRequest(
-			'012345',
-			'cust123@mail.com',
-		);
+		$customerInfoRequest = new EchoCustomerRequest('012345', 'cust123@mail.com');
 
 		$response = $customerInfoRequest->send($apiClient);
 

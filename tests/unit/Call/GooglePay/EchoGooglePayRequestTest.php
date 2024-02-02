@@ -22,9 +22,7 @@ class EchoGooglePayRequestTest extends TestCase
 		$apiClient->expects(self::once())->method('post')
 			->with('googlepay/echo', [
 				'merchantId' => '012345',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'dttm' => '20190425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
@@ -46,8 +44,7 @@ class EchoGooglePayRequestTest extends TestCase
 						'totalPriceStatus' => 'FINAL',
 						'countryCode' => 'CZ',
 					],
-				]),
-			);
+				]));
 
 		$request = new EchoGooglePayRequest('012345');
 
@@ -56,7 +53,7 @@ class EchoGooglePayRequestTest extends TestCase
 		self::assertEquals(DateTimeImmutable::createFromFormat('YmdHis', '20190425131559'), $response->getResponseDateTime());
 		self::assertSame(ResultCode::C0_OK, $response->getResultCode());
 		self::assertSame('OK', $response->getResultMessage());
-		self::assertSame(['VISA', 'MASTERCARD'], $response->getInitParams()?->getAllowedCardNetworks());
+		self::assertSame(['VISA', 'MASTERCARD'], ($nullsafeVariable1 = $response->getInitParams()) ? $nullsafeVariable1->getAllowedCardNetworks() : null);
 		self::assertSame(Country::CZE, $response->getInitParams()->getCountryCode());
 		self::assertSame(InitParamsEnvironment::TEST, $response->getInitParams()->getEnvironment());
 		self::assertSame(0, $response->getInitParams()->getApiVersionMinor());

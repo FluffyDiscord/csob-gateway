@@ -28,7 +28,9 @@ class ReceivePaymentRequestTest extends TestCase
 			->getMock();
 
 		$apiClient->expects(self::once())->method('createResponseByData')
-			->willReturnCallback(static fn (array $postData): Response => new Response(ResponseCode::S200_OK, $postData));
+			->willReturnCallback(static function (array $postData) : Response {
+       return new Response(ResponseCode::S200_OK, $postData);
+   });
 
 		$receivePaymentRequest = new ReceivePaymentRequest();
 
@@ -58,7 +60,9 @@ class ReceivePaymentRequestTest extends TestCase
 			->getMock();
 
 		$apiClient->expects(self::once())->method('createResponseByData')
-			->willReturnCallback(static fn (array $postData): Response => new Response(ResponseCode::S200_OK, $postData));
+			->willReturnCallback(static function (array $postData) : Response {
+       return new Response(ResponseCode::S200_OK, $postData);
+   });
 
 		$receivePaymentRequest = new ReceivePaymentRequest();
 

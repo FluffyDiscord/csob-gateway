@@ -1,8 +1,7 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
-use SlevomatCsobGateway\Api\ApiClient;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 use SlevomatCsobGateway\EncodeHelper;
 use SlevomatCsobGateway\Validator;
@@ -11,39 +10,51 @@ use function array_filter;
 class ClosePaymentRequest
 {
 
-	public function __construct(
-		private string $merchantId,
-		private string $payId,
-		private ?int $totalAmount = null,
-	)
-	{
-		Validator::checkPayId($payId);
-	}
+    /**
+     * @var string
+     */
+    private $merchantId;
+    /**
+     * @var string
+     */
+    private $payId;
+    /**
+     * @var int|null
+     */
+    private $totalAmount;
 
-	public function send(ApiClient $apiClient): AuthCodeStatusDetailPaymentResponse
-	{
-		$data = array_filter([
-			'merchantId' => $this->merchantId,
-			'payId' => $this->payId,
-			'totalAmount' => $this->totalAmount,
-		], EncodeHelper::filterValueCallback());
+    public function __construct(string $merchantId, string $payId, ?int $totalAmount = null)
+    {
+        $this->merchantId = $merchantId;
+        $this->payId = $payId;
+        $this->totalAmount = $totalAmount;
+        Validator::checkPayId($payId);
+    }
 
-		$response = $apiClient->put(
-			'payment/close',
-			$data,
-			new SignatureDataFormatter([
-				'merchantId' => null,
-				'payId' => null,
-				'dttm' => null,
-				'totalAmount' => null,
-			]),
-			new SignatureDataFormatter(AuthCodeStatusDetailPaymentResponse::encodeForSignature()),
-		);
+    /**
+     * @param \SlevomatCsobGateway\Api\ApiClient $apiClient
+     */
+    public function send($apiClient): AuthCodeStatusDetailPaymentResponse
+    {
+        $data = array_filter([
+            'merchantId'  => $this->merchantId,
+            'payId'       => $this->payId,
+            'totalAmount' => $this->totalAmount,
+        ], EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
+            return !empty($value);
+        } : EncodeHelper::filterValueCallback(), EncodeHelper::filterValueCallback() === null ? ARRAY_FILTER_USE_BOTH : 0);
 
-		/** @var mixed[] $data */
-		$data = $response->getData();
+        $response = $apiClient->put('payment/close', $data, new SignatureDataFormatter([
+            'merchantId'  => null,
+            'payId'       => null,
+            'dttm'        => null,
+            'totalAmount' => null,
+        ]), new SignatureDataFormatter(AuthCodeStatusDetailPaymentResponse::encodeForSignature()));
 
-		return AuthCodeStatusDetailPaymentResponse::createFromResponseData($data);
-	}
+        /** @var mixed[] $data */
+        $data = $response->getData();
+
+        return AuthCodeStatusDetailPaymentResponse::createFromResponseData($data);
+    }
 
 }

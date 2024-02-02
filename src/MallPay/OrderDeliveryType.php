@@ -1,13 +1,11 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\MallPay;
 
-enum OrderDeliveryType: string
+class OrderDeliveryType
 {
-
-	case DELIVERY_CARRIER = 'DELIVERY_CARRIER';
-	case PERSONAL_BRANCH = 'PERSONAL_BRANCH';
-	case PERSONAL_PARTNER = 'PERSONAL_PARTNER';
-	case ONLINE = 'ONLINE';
-
+    public const DELIVERY_CARRIER = 'DELIVERY_CARRIER';
+    public const PERSONAL_BRANCH = 'PERSONAL_BRANCH';
+    public const PERSONAL_PARTNER = 'PERSONAL_PARTNER';
+    public const ONLINE = 'ONLINE';
 }

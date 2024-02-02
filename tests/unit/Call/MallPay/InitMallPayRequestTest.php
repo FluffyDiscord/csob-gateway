@@ -103,50 +103,20 @@ class InitMallPayRequestTest extends TestCase
 				'clientIp' => '127.0.0.1',
 				'returnUrl' => 'https://www.slevomat.cz',
 				'returnMethod' => 'GET',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20210505092159',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
 					'paymentStatus' => 1,
 					'mallpayUrl' => 'https://mallpay.cz',
-				]),
-			);
+				]));
 
 		$order = new Order(Currency::EUR, OrderDeliveryType::DELIVERY_CARRIER, OrderCarrierId::TNT, null);
-		$order->addItem(
-			'123',
-			'345',
-			'Super věc',
-			OrderItemType::PHYSICAL,
-			2,
-			'Varianta 1',
-			'Popisek',
-			'Producer',
-			['kategorie 1', 'kategorie 2'],
-			100,
-			200,
-			20,
-			40,
-			20,
-			'https://obchod.cz/produkt/123-345',
-		);
+		$order->addItem('123', '345', 'Super věc', OrderItemType::PHYSICAL, 2, 'Varianta 1', 'Popisek', 'Producer', ['kategorie 1', 'kategorie 2'], 100, 200, 20, 40, 20, 'https://obchod.cz/produkt/123-345');
 		$order->addAddress('Slevomat', Country::CZE, 'Praha 8', 'Pernerova 691/42', 'xxx', '186 00', AddressType::BILLING);
 
-		$request = new InitMallPayRequest(
-			'012345',
-			'12345',
-			new Customer(null, null, 'Pepa Zdepa', 'Ing', 'Ph.d', 'pepa@zdepa.cz', '+420800300300', '123', '345'),
-			$order,
-			true,
-			'127.0.0.1',
-			HttpMethod::GET,
-			'https://www.slevomat.cz',
-			null,
-			null,
-		);
+		$request = new InitMallPayRequest('012345', '12345', new Customer(null, null, 'Pepa Zdepa', 'Ing', 'Ph.d', 'pepa@zdepa.cz', '+420800300300', '123', '345'), $order, true, '127.0.0.1', HttpMethod::GET, 'https://www.slevomat.cz', null, null);
 
 		$response = $request->send($apiClient);
 

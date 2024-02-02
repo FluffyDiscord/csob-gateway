@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Api\Driver;
 
@@ -8,19 +8,29 @@ use SlevomatCsobGateway\Api\ApiClientDriverException;
 class CurlDriverException extends RuntimeException implements ApiClientDriverException
 {
 
-	public function __construct(int $code, string $message, private mixed $info)
-	{
-		parent::__construct('Request error: ' . $message);
+    /**
+     * @var mixed
+     */
+    private $info;
 
-		$this->code = $code;
-	}
+    /**
+     * @param mixed $info
+     */
+    public function __construct(int $code, string $message, $info)
+    {
+        $this->info = $info;
+        parent::__construct('Request error: ' . $message);
 
-	/**
-	 * @see curl_getinfo()
-	 */
-	public function getInfo(): mixed
-	{
-		return $this->info;
-	}
+        $this->code = $code;
+    }
+
+    /**
+     * @return mixed
+     * @see curl_getinfo()
+     */
+    public function getInfo()
+    {
+        return $this->info;
+    }
 
 }

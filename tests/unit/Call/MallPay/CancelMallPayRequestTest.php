@@ -24,24 +24,17 @@ class CancelMallPayRequestTest extends TestCase
 			->with('mallpay/cancel', [
 				'merchantId' => '012345',
 				'payId' => '12345',
-				'reason' => CancelReason::ABANDONED->value,
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+				'reason' => CancelReason::ABANDONED,
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20210505092159',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
 					'paymentStatus' => 1,
 					'mallpayUrl' => 'https://mallpay.cz',
-				]),
-			);
+				]));
 
-		$request = new CancelMallPayRequest(
-			'012345',
-			'12345',
-			CancelReason::ABANDONED,
-		);
+		$request = new CancelMallPayRequest('012345', '12345', CancelReason::ABANDONED);
 
 		$response = $request->send($apiClient);
 

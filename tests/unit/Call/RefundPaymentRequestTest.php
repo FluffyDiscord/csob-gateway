@@ -21,21 +21,15 @@ class RefundPaymentRequestTest extends TestCase
 			->with('payment/refund', [
 				'merchantId' => '012345',
 				'payId' => '123456789',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'payId' => '123456789',
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
 					'paymentStatus' => 8,
-				]),
-			);
+				]));
 
-		$refundPaymentRequest = new RefundPaymentRequest(
-			'012345',
-			'123456789',
-		);
+		$refundPaymentRequest = new RefundPaymentRequest('012345', '123456789');
 
 		$response = $refundPaymentRequest->send($apiClient);
 

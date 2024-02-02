@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call;
 
@@ -9,63 +9,74 @@ use function array_filter;
 class EchoResponse implements Response
 {
 
-	public function __construct(
-		private DateTimeImmutable $responseDateTime,
-		private ResultCode $resultCode,
-		private string $resultMessage,
-	)
-	{
-	}
+    /**
+     * @var \DateTimeImmutable
+     */
+    private $responseDateTime;
+    /**
+     * @var int
+     */
+    private $resultCode;
+    /**
+     * @var string
+     */
+    private $resultMessage;
 
-	/**
-	 * @param mixed[] $data
-	 */
-	public static function createFromResponseData(array $data): self
-	{
-		return new self(
-			DateTimeImmutable::createFromFormat('YmdHis', $data['dttm']),
-			ResultCode::from($data['resultCode']),
-			$data['resultMessage'],
-		);
-	}
+    public function __construct(DateTimeImmutable $responseDateTime, int $resultCode, string $resultMessage)
+    {
+        $this->responseDateTime = $responseDateTime;
+        $this->resultCode = $resultCode;
+        $this->resultMessage = $resultMessage;
+    }
 
-	/**
-	 * @return mixed[]
-	 */
-	public static function encodeForSignature(): array
-	{
-		return [
-			'dttm' => null,
-			'resultCode' => null,
-			'resultMessage' => null,
-		];
-	}
+    /**
+     * @param mixed[] $data
+     * @return $this
+     */
+    public static function createFromResponseData($data): \SlevomatCsobGateway\Call\Response
+    {
+        return new self(DateTimeImmutable::createFromFormat('YmdHis', $data['dttm']), $data['resultCode'], $data['resultMessage']);
+    }
 
-	/**
-	 * @return mixed[]
-	 */
-	public function encode(): array
-	{
-		return array_filter([
-			'dttm' => $this->responseDateTime->format('YmdHis'),
-			'resultCode' => $this->resultCode->value,
-			'resultMessage' => $this->resultMessage,
-		], EncodeHelper::filterValueCallback());
-	}
+    /**
+     * @return mixed[]
+     */
+    public static function encodeForSignature(): array
+    {
+        return [
+            'dttm'          => null,
+            'resultCode'    => null,
+            'resultMessage' => null,
+        ];
+    }
 
-	public function getResponseDateTime(): DateTimeImmutable
-	{
-		return $this->responseDateTime;
-	}
+    /**
+     * @return mixed[]
+     */
+    public function encode(): array
+    {
+        return array_filter([
+            'dttm'          => $this->responseDateTime->format('YmdHis'),
+            'resultCode'    => $this->resultCode,
+            'resultMessage' => $this->resultMessage,
+        ], EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
+            return !empty($value);
+        } : EncodeHelper::filterValueCallback(), EncodeHelper::filterValueCallback() === null ? ARRAY_FILTER_USE_BOTH : 0);
+    }
 
-	public function getResultCode(): ResultCode
-	{
-		return $this->resultCode;
-	}
+    public function getResponseDateTime(): DateTimeImmutable
+    {
+        return $this->responseDateTime;
+    }
 
-	public function getResultMessage(): string
-	{
-		return $this->resultMessage;
-	}
+    public function getResultCode(): int
+    {
+        return $this->resultCode;
+    }
+
+    public function getResultMessage(): string
+    {
+        return $this->resultMessage;
+    }
 
 }

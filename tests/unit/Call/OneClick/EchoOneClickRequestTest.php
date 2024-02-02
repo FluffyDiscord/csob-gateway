@@ -22,20 +22,14 @@ class EchoOneClickRequestTest extends TestCase
 			->with('oneclick/echo', [
 				'merchantId' => '012345',
 				'origPayId' => 'ef08b6e9f22345c',
-			])
-			->willReturn(
-				new Response(ResponseCode::S200_OK, [
+			])->willReturn(new Response(ResponseCode::S200_OK, [
 					'origPayId' => '123456789',
 					'dttm' => '20140425131559',
 					'resultCode' => 0,
 					'resultMessage' => 'OK',
-				]),
-			);
+				]));
 
-		$request = new EchoOneClickRequest(
-			'012345',
-			'ef08b6e9f22345c',
-		);
+		$request = new EchoOneClickRequest('012345', 'ef08b6e9f22345c');
 
 		$response = $request->send($apiClient);
 

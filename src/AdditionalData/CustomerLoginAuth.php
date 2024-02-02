@@ -1,17 +1,15 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\AdditionalData;
 
-enum CustomerLoginAuth: string
+class CustomerLoginAuth
 {
-
-	case GUEST = 'guest';
-	case ACCOUNT = 'account';
-	case FEDERATED = 'federated';
-	case ISSUER = 'issuer';
-	case THIRD_PARTY = 'thirdparty';
-	case FIDO = 'fido';
-	case FIDO_SIGNED = 'fido_signed';
-	case API = 'api';
-
+    public const GUEST = 'guest';
+    public const ACCOUNT = 'account';
+    public const FEDERATED = 'federated';
+    public const ISSUER = 'issuer';
+    public const THIRD_PARTY = 'thirdparty';
+    public const FIDO = 'fido';
+    public const FIDO_SIGNED = 'fido_signed';
+    public const API = 'api';
 }

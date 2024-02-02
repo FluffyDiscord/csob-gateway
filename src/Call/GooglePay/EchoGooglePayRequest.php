@@ -1,37 +1,40 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Call\GooglePay;
 
-use SlevomatCsobGateway\Api\ApiClient;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 
 class EchoGooglePayRequest
 {
 
-	public function __construct(private string $merchantId)
-	{
-	}
+    /**
+     * @var string
+     */
+    private $merchantId;
 
-	public function send(ApiClient $apiClient): EchoGooglePayResponse
-	{
-		$requestData = [
-			'merchantId' => $this->merchantId,
-		];
+    public function __construct(string $merchantId)
+    {
+        $this->merchantId = $merchantId;
+    }
 
-		$response = $apiClient->post(
-			'googlepay/echo',
-			$requestData,
-			new SignatureDataFormatter([
-				'merchantId' => null,
-				'dttm' => null,
-			]),
-			new SignatureDataFormatter(EchoGooglePayResponse::encodeForSignature()),
-		);
+    /**
+     * @param \SlevomatCsobGateway\Api\ApiClient $apiClient
+     */
+    public function send($apiClient): EchoGooglePayResponse
+    {
+        $requestData = [
+            'merchantId' => $this->merchantId,
+        ];
 
-		/** @var mixed[] $data */
-		$data = $response->getData();
+        $response = $apiClient->post('googlepay/echo', $requestData, new SignatureDataFormatter([
+            'merchantId' => null,
+            'dttm'       => null,
+        ]), new SignatureDataFormatter(EchoGooglePayResponse::encodeForSignature()));
 
-		return EchoGooglePayResponse::createFromResponseData($data);
-	}
+        /** @var mixed[] $data */
+        $data = $response->getData();
+
+        return EchoGooglePayResponse::createFromResponseData($data);
+    }
 
 }

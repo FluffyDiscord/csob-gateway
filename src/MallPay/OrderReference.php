@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\MallPay;
 
@@ -11,68 +11,91 @@ use function array_map;
 class OrderReference implements Encodable
 {
 
-	/** @var OrderItemReference[] */
-	private array $items = [];
+    /**
+     * @var \SlevomatCsobGateway\Price
+     */
+    private $totalPrice;
+    /**
+     * @var Vat[]
+     */
+    private $totalVat;
+    /** @var OrderItemReference[] */
+    private $items = [];
 
-	/**
-	 * @param Vat[] $totalVat
-	 */
-	public function __construct(private Price $totalPrice, private array $totalVat)
-	{
-	}
+    /**
+     * @param Vat[] $totalVat
+     */
+    public function __construct(Price $totalPrice, array $totalVat)
+    {
+        $this->totalPrice = $totalPrice;
+        $this->totalVat = $totalVat;
+    }
 
-	public function addItem(string $code, ?string $ean, string $name, ?OrderItemType $type, ?int $quantity): void
-	{
-		$this->items[] = new OrderItemReference($code, $ean, $name, $type, $quantity);
-	}
+    /**
+     * @param string $code
+     * @param string|null $ean
+     * @param string $name
+     * @param string|null $type
+     * @param int|null $quantity
+     */
+    public function addItem($code, $ean, $name, $type, $quantity): void
+    {
+        $this->items[] = new OrderItemReference($code, $ean, $name, $type, $quantity);
+    }
 
-	/**
-	 * @return mixed[]
-	 */
-	public function encode(): array
-	{
-		return array_filter([
-			'totalPrice' => $this->totalPrice->encode(),
-			'totalVat' => array_map(static fn (Vat $vat): array => $vat->encode(), $this->totalVat),
-			'items' => array_map(static fn (OrderItemReference $item): array => $item->encode(), $this->items),
-		], EncodeHelper::filterValueCallback());
-	}
+    /**
+     * @return mixed[]
+     */
+    public function encode(): array
+    {
+        return array_filter([
+            'totalPrice' => $this->totalPrice->encode(),
+            'totalVat'   => array_map(static function (Vat $vat): array {
+                return $vat->encode();
+            }, $this->totalVat),
+            'items'      => array_map(static function (OrderItemReference $item): array {
+                return $item->encode();
+            }, $this->items),
+        ], EncodeHelper::filterValueCallback() ?? function ($value, $key): bool {
+            return !empty($value);
+        }, EncodeHelper::filterValueCallback() === null ? ARRAY_FILTER_USE_BOTH : 0);
+    }
 
-	/**
-	 * @return mixed[]
-	 */
-	public static function encodeForSignature(): array
-	{
-		return [
-			'totalPrice' => Price::encodeForSignature(),
-			'totalVat' => [
-				Vat::encodeForSignature(),
-			],
-			'items' => [
-				OrderItemReference::encodeForSignature(),
-			],
-		];
-	}
+    /**
+     * @return mixed[]
+     */
+    public static function encodeForSignature(): array
+    {
+        return [
+            'totalPrice' => Price::encodeForSignature(),
+            'totalVat'   => [
+                Vat::encodeForSignature(),
+            ],
+            'items'      => [
+                OrderItemReference::encodeForSignature(),
+            ],
+        ];
+    }
 
-	public function getTotalPrice(): Price
-	{
-		return $this->totalPrice;
-	}
+    public function getTotalPrice(): Price
+    {
+        return $this->totalPrice;
+    }
 
-	/**
-	 * @return Vat[]
-	 */
-	public function getTotalVat(): array
-	{
-		return $this->totalVat;
-	}
+    /**
+     * @return Vat[]
+     */
+    public function getTotalVat(): array
+    {
+        return $this->totalVat;
+    }
 
-	/**
-	 * @return OrderItemReference[]
-	 */
-	public function getItems(): array
-	{
-		return $this->items;
-	}
+    /**
+     * @return OrderItemReference[]
+     */
+    public function getItems(): array
+    {
+        return $this->items;
+    }
 
 }

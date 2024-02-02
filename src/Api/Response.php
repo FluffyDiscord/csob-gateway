@@ -1,51 +1,67 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace SlevomatCsobGateway\Api;
 
 class Response
 {
 
-	/**
-	 * @param mixed[]|null $data
-	 * @param string[]|string[][] $headers
-	 * @param mixed[] $extensions
-	 */
-	public function __construct(
-		private ResponseCode $responseCode,
-		private ?array $data = null,
-		private array $headers = [],
-		private array $extensions = [],
-	)
-	{
-	}
+    /**
+     * @var int
+     */
+    private $responseCode;
+    /**
+     * @var mixed[]|null
+     */
+    private $data;
+    /**
+     * @var string[]|string[][]
+     */
+    private $headers = [];
+    /**
+     * @var mixed[]
+     */
+    private $extensions = [];
 
-	public function getResponseCode(): ResponseCode
-	{
-		return $this->responseCode;
-	}
+    /**
+     * @param mixed[]|null $data
+     * @param string[]|string[][] $headers
+     * @param mixed[] $extensions
+     */
+    public function __construct(int $responseCode, ?array $data = null, array $headers = [], array $extensions = [])
+    {
+        $this->responseCode = $responseCode;
+        $this->data = $data;
+        $this->headers = $headers;
+        $this->extensions = $extensions;
+    }
 
-	/**
-	 * @return mixed[]|null
-	 */
-	public function getData(): ?array
-	{
-		return $this->data;
-	}
+    public function getResponseCode(): int
+    {
+        return $this->responseCode;
+    }
 
-	/**
-	 * @return string[]|string[][]
-	 */
-	public function getHeaders(): array
-	{
-		return $this->headers;
-	}
+    /**
+     * @return mixed[]|null
+     */
+    public function getData(): ?array
+    {
+        return $this->data;
+    }
 
-	/**
-	 * @return mixed[]
-	 */
-	public function getExtensions(): array
-	{
-		return $this->extensions;
-	}
+    /**
+     * @return string[]|string[][]
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getExtensions(): array
+    {
+        return $this->extensions;
+    }
 
 }
