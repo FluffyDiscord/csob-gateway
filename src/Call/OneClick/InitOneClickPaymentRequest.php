@@ -4,7 +4,6 @@ namespace SlevomatCsobGateway\Call\OneClick;
 
 use SlevomatCsobGateway\AdditionalData\Customer;
 use SlevomatCsobGateway\AdditionalData\Order;
-use SlevomatCsobGateway\Api\HttpMethod;
 use SlevomatCsobGateway\Call\ActionsPaymentResponse;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 use SlevomatCsobGateway\EncodeHelper;
@@ -68,8 +67,16 @@ class InitOneClickPaymentRequest
      * @var string|null
      */
     private $merchantData;
+    /**
+     * @var Language::*|null
+     */
+    private $language;
+    /**
+     * @var int|null
+     */
+    private $ttlSec;
 
-    public function __construct(string $merchantId, string $origPayId, string $orderId, ?string $clientIp, ?Price $price, ?bool $closePayment, string $returnUrl, string $returnMethod, ?Customer $customer = null, ?Order $order = null, ?bool $clientInitiated = null, ?bool $sdkUsed = null, ?string $merchantData = null)
+    public function __construct(string $merchantId, string $origPayId, string $orderId, ?string $clientIp, ?Price $price, ?bool $closePayment, string $returnUrl, string $returnMethod, ?Customer $customer = null, ?Order $order = null, ?bool $clientInitiated = null, ?bool $sdkUsed = null, ?string $merchantData = null, ?string $language = null, ?int $ttlSec = null)
     {
         $this->merchantId = $merchantId;
         $this->origPayId = $origPayId;
@@ -84,6 +91,8 @@ class InitOneClickPaymentRequest
         $this->clientInitiated = $clientInitiated;
         $this->sdkUsed = $sdkUsed;
         $this->merchantData = $merchantData;
+        $this->language = $language;
+        $this->ttlSec = $ttlSec;
         Validator::checkPayId($this->origPayId);
         Validator::checkOrderId($this->orderId);
         Validator::checkReturnUrl($this->returnUrl);
@@ -113,6 +122,8 @@ class InitOneClickPaymentRequest
             'clientInitiated' => $this->clientInitiated,
             'sdkUsed'         => $this->sdkUsed,
             'merchantData'    => $this->merchantData !== null ? base64_encode($this->merchantData) : null,
+            'language'        => $this->language,
+            'ttlSec'          => $this->ttlSec,
         ], EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
             return !empty($value);
         } : EncodeHelper::filterValueCallback(), EncodeHelper::filterValueCallback() === null ? ARRAY_FILTER_USE_BOTH : 0);
@@ -133,6 +144,8 @@ class InitOneClickPaymentRequest
             'clientInitiated' => null,
             'sdkUsed'         => null,
             'merchantData'    => null,
+            'language'        => null,
+            'ttlSec'          => null,
         ]), new SignatureDataFormatter(ActionsPaymentResponse::encodeForSignature()));
 
         /** @var mixed[] $data */

@@ -4,11 +4,11 @@ namespace SlevomatCsobGateway\Call\ApplePay;
 
 use SlevomatCsobGateway\AdditionalData\Customer;
 use SlevomatCsobGateway\AdditionalData\Order;
-use SlevomatCsobGateway\Api\HttpMethod;
 use SlevomatCsobGateway\Call\ActionsPaymentResponse;
 use SlevomatCsobGateway\Call\InvalidJsonPayloadException;
 use SlevomatCsobGateway\Crypto\SignatureDataFormatter;
 use SlevomatCsobGateway\EncodeHelper;
+use SlevomatCsobGateway\Language;
 use SlevomatCsobGateway\Price;
 use SlevomatCsobGateway\Validator;
 use function array_filter;
@@ -72,6 +72,10 @@ class InitApplePayRequest
      */
     private $merchantData;
     /**
+     * @var Language::*|null
+     */
+    private $language;
+    /**
      * @var int|null
      */
     private $ttlSec;
@@ -79,7 +83,7 @@ class InitApplePayRequest
     /**
      * @param mixed[] $payload Complete payload from Apple Pay JS API, containing paymentData.
      */
-    public function __construct(string $merchantId, string $orderId, string $clientIp, Price $totalPrice, bool $closePayment, array $payload, string $returnUrl, string $returnMethod, ?Customer $customer = null, ?Order $order = null, ?bool $sdkUsed = null, ?string $merchantData = null, ?int $ttlSec = null)
+    public function __construct(string $merchantId, string $orderId, string $clientIp, Price $totalPrice, bool $closePayment, array $payload, string $returnUrl, string $returnMethod, ?Customer $customer = null, ?Order $order = null, ?bool $sdkUsed = null, ?string $merchantData = null, ?string $language = null, ?int $ttlSec = null)
     {
         $this->merchantId = $merchantId;
         $this->orderId = $orderId;
@@ -93,6 +97,7 @@ class InitApplePayRequest
         $this->order = $order;
         $this->sdkUsed = $sdkUsed;
         $this->merchantData = $merchantData;
+        $this->language = $language;
         $this->ttlSec = $ttlSec;
         Validator::checkOrderId($this->orderId);
         Validator::checkReturnUrl($this->returnUrl);
@@ -135,6 +140,7 @@ class InitApplePayRequest
             'order'        => ($nullsafeVariable2 = $this->order) ? $nullsafeVariable2->encode() : null,
             'sdkUsed'      => $this->sdkUsed,
             'merchantData' => $this->merchantData !== null ? base64_encode($this->merchantData) : null,
+            'language'     => $this->language,
             'ttlSec'       => $this->ttlSec,
         ], EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
             return !empty($value);
@@ -155,6 +161,7 @@ class InitApplePayRequest
             'order'        => Order::encodeForSignature(),
             'sdkUsed'      => null,
             'merchantData' => null,
+            'language'     => null,
             'ttlSec'       => null,
         ]), new SignatureDataFormatter(ActionsPaymentResponse::encodeForSignature()));
 

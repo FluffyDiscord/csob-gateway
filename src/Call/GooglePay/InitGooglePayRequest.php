@@ -66,6 +66,10 @@ class InitGooglePayRequest
      */
     private $merchantData;
     /**
+     * @var Language::*|null
+     */
+    private $language;
+    /**
      * @var int|null
      */
     private $ttlSec;
@@ -73,7 +77,7 @@ class InitGooglePayRequest
     /**
      * @param mixed[] $payload Complete payload from Google Pay JS API, containing paymentMethodData.tokenizationData.token
      */
-    public function __construct(string $merchantId, string $orderId, string $clientIp, Price $totalPrice, ?bool $closePayment, array $payload, string $returnUrl, string $returnMethod, ?Customer $customer = null, ?Order $order = null, ?bool $sdkUsed = null, ?string $merchantData = null, ?int $ttlSec = null)
+    public function __construct(string $merchantId, string $orderId, string $clientIp, Price $totalPrice, ?bool $closePayment, array $payload, string $returnUrl, string $returnMethod, ?Customer $customer = null, ?Order $order = null, ?bool $sdkUsed = null, ?string $merchantData = null, ?string $language = null, ?int $ttlSec = null)
     {
         $this->merchantId = $merchantId;
         $this->orderId = $orderId;
@@ -87,6 +91,7 @@ class InitGooglePayRequest
         $this->order = $order;
         $this->sdkUsed = $sdkUsed;
         $this->merchantData = $merchantData;
+        $this->language = $language;
         $this->ttlSec = $ttlSec;
         Validator::checkOrderId($this->orderId);
         Validator::checkReturnUrl($this->returnUrl);
@@ -124,6 +129,7 @@ class InitGooglePayRequest
             'order'        => ($nullsafeVariable2 = $this->order) ? $nullsafeVariable2->encode() : null,
             'sdkUsed'      => $this->sdkUsed,
             'merchantData' => $this->merchantData !== null ? base64_encode($this->merchantData) : null,
+            'language'     => $this->language,
             'ttlSec'       => $this->ttlSec,
         ], EncodeHelper::filterValueCallback() === null ? function ($value, $key): bool {
             return !empty($value);
@@ -144,6 +150,7 @@ class InitGooglePayRequest
             'order'        => Order::encodeForSignature(),
             'sdkUsed'      => null,
             'merchantData' => null,
+            'language'     => null,
             'ttlSec'       => null,
         ]), new SignatureDataFormatter(ActionsPaymentResponse::encodeForSignature()));
 

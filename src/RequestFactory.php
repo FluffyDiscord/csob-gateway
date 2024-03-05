@@ -142,10 +142,12 @@ class RequestFactory
      * @param bool|null $clientInitiated
      * @param bool|null $sdkUsed
      * @param string|null $merchantData
+     * @param Language::*|null $language
+     * @param int|null $ttlSec
      */
-    public function createOneclickInitPayment($origPayId, $orderId, $clientIp, $price, $closePayment, $returnUrl, $returnMethod, $customer = null, $order = null, $clientInitiated = null, $sdkUsed = null, $merchantData = null): InitOneClickPaymentRequest
+    public function createOneclickInitPayment($origPayId, $orderId, $clientIp, $price, $closePayment, $returnUrl, $returnMethod, $customer = null, $order = null, $clientInitiated = null, $sdkUsed = null, $merchantData = null, ?string $language = null, ?int $ttlSec = null): InitOneClickPaymentRequest
     {
-        return new InitOneClickPaymentRequest($this->merchantId, $origPayId, $orderId, $clientIp, $price, $closePayment, $returnUrl, $returnMethod, $customer, $order, $clientInitiated, $sdkUsed, $merchantData);
+        return new InitOneClickPaymentRequest($this->merchantId, $origPayId, $orderId, $clientIp, $price, $closePayment, $returnUrl, $returnMethod, $customer, $order, $clientInitiated, $sdkUsed, $merchantData, $language, $ttlSec);
     }
 
     /**
@@ -189,11 +191,12 @@ class RequestFactory
      * @param \SlevomatCsobGateway\AdditionalData\Order|null $order
      * @param bool|null $sdkUsed
      * @param string|null $merchantData
+     * @param Language::*|null $language
      * @param int|null $ttlSec
      */
-    public function createApplePayInitRequest($orderId, $clientIp, $totalPrice, $closePayment, $payload, $returnUrl, $returnMethod, $customer = null, $order = null, $sdkUsed = null, $merchantData = null, $ttlSec = null): InitApplePayRequest
+    public function createApplePayInitRequest($orderId, $clientIp, $totalPrice, $closePayment, $payload, $returnUrl, $returnMethod, $customer = null, $order = null, $sdkUsed = null, $merchantData = null, $language = null, $ttlSec = null): InitApplePayRequest
     {
-        return new InitApplePayRequest($this->merchantId, $orderId, $clientIp, $totalPrice, $closePayment, $payload, $returnUrl, $returnMethod, $customer, $order, $sdkUsed, $merchantData, $ttlSec);
+        return new InitApplePayRequest($this->merchantId, $orderId, $clientIp, $totalPrice, $closePayment, $payload, $returnUrl, $returnMethod, $customer, $order, $sdkUsed, $merchantData, $language, $ttlSec);
     }
 
     /**
@@ -278,11 +281,12 @@ class RequestFactory
      * @param \SlevomatCsobGateway\AdditionalData\Order|null $order
      * @param bool|null $sdkUsed
      * @param string|null $merchantData
+     * @param Language::*|null $language
      * @param int|null $ttlSec
      */
-    public function createGooglePayInitRequest($orderId, $clientIp, $totalPrice, $closePayment, $payload, $returnUrl, $returnMethod, $customer = null, $order = null, $sdkUsed = null, $merchantData = null, $ttlSec = null): InitGooglePayRequest
+    public function createGooglePayInitRequest($orderId, $clientIp, $totalPrice, $closePayment, $payload, $returnUrl, $returnMethod, $customer = null, $order = null, $sdkUsed = null, $merchantData = null, $language = null, $ttlSec = null): InitGooglePayRequest
     {
-        return new InitGooglePayRequest($this->merchantId, $orderId, $clientIp, $totalPrice, $closePayment, $payload, $returnUrl, $returnMethod, $customer, $order, $sdkUsed, $merchantData, $ttlSec);
+        return new InitGooglePayRequest($this->merchantId, $orderId, $clientIp, $totalPrice, $closePayment, $payload, $returnUrl, $returnMethod, $customer, $order, $sdkUsed, $merchantData, $language, $ttlSec);
     }
 
     /**
